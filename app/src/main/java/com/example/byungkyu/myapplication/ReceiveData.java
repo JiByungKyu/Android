@@ -18,7 +18,7 @@ public class ReceiveData {
                     while(socketManager.Isconnected) {
                         bytes=socketManager.recvMsg();
                         if(bytes!=null){
-                            
+
                         }
                         else;//checksum 오류
                     }
