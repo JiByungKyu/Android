@@ -15,7 +15,7 @@ public class ReceiveData {
             @Override
             public void run() {
                 try{
-                    //
+
                     socketManager.recvMsg();
 
                 }
