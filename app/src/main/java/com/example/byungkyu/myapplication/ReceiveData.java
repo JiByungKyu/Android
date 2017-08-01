@@ -7,7 +7,7 @@ import android.view.View;
  */
 
 public class ReceiveData {
-
+    byte [] bytes;
     Thread thread;
     SocketManager socketManager = SocketManager.singleton();
     public void start(View view){
@@ -15,9 +15,13 @@ public class ReceiveData {
             @Override
             public void run() {
                 try{
-
-                    socketManager.recvMsg();
-
+                    while(socketManager.Isconnected) {
+                        bytes=socketManager.recvMsg();
+                        if(bytes!=null){
+                            
+                        }
+                        else;//checksum 오류
+                    }
                 }
                 catch(Exception e)  {
 
