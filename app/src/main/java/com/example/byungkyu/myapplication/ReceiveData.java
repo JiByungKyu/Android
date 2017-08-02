@@ -10,6 +10,10 @@ public class ReceiveData {
     byte [] bytes;
     Thread thread;
     SocketManager socketManager = SocketManager.singleton();
+    SocketActivity activity;
+    public ReceiveData(SocketActivity activity){
+        this.activity=activity;
+    }
     public void start(View view){
         thread = new Thread(new Runnable() {
             @Override
@@ -18,7 +22,7 @@ public class ReceiveData {
                     while(socketManager.Isconnected) {
                         bytes=socketManager.recvMsg();
                         if(bytes!=null){
-
+                            activity.receiveMsg(bytes);
                         }
                         else;//checksum 오류
                     }

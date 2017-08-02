@@ -8,11 +8,13 @@ import android.widget.TextView;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SocketActivity{
     TextView rcvMsg;
-
+    Message msg;
+    byte[] bytes;
+    StringBuilder sb = new StringBuilder();
     RequestData requestData = new RequestData();
-    ReceiveData receiveData = new ReceiveData();
+    ReceiveData receiveData = new ReceiveData(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,17 +22,25 @@ public class MainActivity extends AppCompatActivity {
         rcvMsg=(TextView)findViewById(R.id.textView);
         try{
             process();
-            //
         }
         catch (Exception e){
 
         }
-        msg = Message.obtain();
-        msg.obj=sb.toString();
-        msgHandler.sendMessage(msg);
+
+    }
+    public void receiveMsg(byte[] bytes){
+        this.bytes=bytes;
     }
     public void process() throws IOException{
         requestData.reqFault();
+    }
+    public void test(){
+        for(byte bt:bytes){
+            sb.append(String.format("%02x ", bt & 0xff));
+        }
+        msg = Message.obtain();
+        msg.obj=sb.toString();
+        msgHandler.sendMessage(msg);
     }
     Handler msgHandler = new Handler(){
         public void handleMessage(Message msg){

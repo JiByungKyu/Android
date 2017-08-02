@@ -66,12 +66,12 @@ public class SocketManager {
         inputStream.read(buffer);
         byte[] bytes=new byte[buffer[0]];
         sum=buffer[0];
-        //StringBuilder sb = new StringBuilder();
+
         System.arraycopy(buffer,1,bytes,0,buffer[0]);
         for(int i=1;i<=buffer[0];i++) {
             //bytes[i-1]=buffer[i]; 복사 방법2
             sum+=buffer[i];
-            //sb.append(String.format("%02x ", buffer[i] & 0xff));
+
         }
         if(sum==buffer[buffer[0]]+1)
             return bytes;
