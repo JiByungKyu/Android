@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
     TextView rcvMsg;
-    Message msg;
+
     RequestData requestData = new RequestData();
     ReceiveData receiveData = new ReceiveData();
     @Override

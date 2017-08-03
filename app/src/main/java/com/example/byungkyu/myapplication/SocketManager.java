@@ -15,7 +15,7 @@ public class SocketManager {
     private String ip = "192.168.2.99";
     private int port = 5000;
     private Socket socket;
-    byte[] bytes = new byte[500];
+    byte[] buffer = new byte[500];
     private InputStream inputStream;
     private OutputStream outputStream;
     public boolean Isconnected=false;
@@ -61,11 +61,26 @@ public class SocketManager {
     public void sendMsg(BigInteger bInt)throws IOException{
             outputStream.write(bInt.toByteArray());
     }
-    public String recvMsg()throws IOException{
-        inputStream.read(bytes);
-        StringBuilder sb = new StringBuilder();
-        for(int i=1;i<=bytes[0];i++)
-            sb.append(String.format("%02x ", bytes[i] & 0xff));
+    public byte[] recvMsg()throws IOException{
+        int sum;
+        inputStream.read(buffer);
+        byte[] bytes=new byte[buffer[0]];
+        sum=buffer[0];
+        //StringBuilder sb = new StringBuilder();
+        System.arraycopy(buffer,1,bytes,0,buffer[0]);
+        for(int i=1;i<=buffer[0];i++) {
+            //bytes[i-1]=buffer[i]; 복사 방법2
+            sum+=buffer[i];
+            //sb.append(String.format("%02x ", buffer[i] & 0xff));
+        }
+        if(sum==buffer[buffer[0]]+1)
+            return bytes;
+        else
+            return null;
+        /*
+        else
         return sb.toString();
+
+         */
     }
 }
