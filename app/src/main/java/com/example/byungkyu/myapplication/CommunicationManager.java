@@ -23,6 +23,7 @@ public class CommunicationManager {
     private Socket socket;
     byte[] buffer = new byte[500];
     byte[] bytes;
+    int gap=250;
     private InputStream inputStream;
     private OutputStream outputStream;
     public boolean Isconnected=false;
@@ -75,12 +76,19 @@ public class CommunicationManager {
     }
     public void sendMsg(){
         try {
-            outputStream.write(requestData.reqTest());
-            outputStream.write(requestData.reqFault());
-            //outputStream.write(requestData.reqFuel());
-            //outputStream.write(requestData.reqOpTime());
-            outputStream.write(requestData.reqPump());
-            Log.d("보낸다, 연결됨?", ""+Isconnected);
+            if(socketActivity instanceof MainActivity) {
+                outputStream.write(requestData.reqTest());
+                Thread.sleep(gap);
+               // outputStream.flush();
+                outputStream.write(requestData.reqFault());
+                Thread.sleep(gap);
+                outputStream.write(requestData.reqFuel());
+                Thread.sleep(gap);
+                outputStream.write(requestData.reqOpTime());
+                Thread.sleep(gap);
+                outputStream.write(requestData.reqPump());
+                Log.d("보낸다, 연결됨?", "" + Isconnected);
+            }
         }
         catch(Exception e){
             Log.e(TAG,"ERROR : "+e);
@@ -134,5 +142,8 @@ public class CommunicationManager {
             }
         });
         receiveThread.start();
+    }
+    public void mainReq(){
+
     }
 }
