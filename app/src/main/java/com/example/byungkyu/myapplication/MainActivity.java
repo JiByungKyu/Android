@@ -25,9 +25,9 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception e){
 
         }
-        msg = Message.obtain();
+        /*msg = Message.obtain();
         msg.obj=sb.toString();
-        msgHandler.sendMessage(msg);
+        msgHandler.sendMessage(msg);*/
     }
     public void process() throws IOException{
         requestData.reqFault();
