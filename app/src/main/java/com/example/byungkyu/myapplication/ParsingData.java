@@ -1,7 +1,8 @@
 package com.example.byungkyu.myapplication;
 
+import android.util.Log;
+
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -74,6 +75,8 @@ public class ParsingData {
         data = null;
         /*PRI를 파악하기 위한 HashMap*/
         responseMap = new HashMap<Byte, Object>();
+        LDR = new HashMap<Byte, Object>();
+        CURRENT_ERROR_INFO = new HashMap<Byte, Byte[]>();
         responseMap.put((byte) 0xE6, LDR);
         responseMap.put((byte) 0xE7, LDW);
         responseMap.put((byte) 0xE8, PSS);
@@ -131,8 +134,8 @@ public class ParsingData {
         String className = null;
         Byte[] tmpArray;
         HashMap tmpMap;
-
-        responseMap.get(data[POSITIVE_RS_ID]);
+        sendMsg = new HashMap<Byte, String>();
+        obj = responseMap.get(data[POSITIVE_RS_ID]);
 
         if(obj == null){
             throw new Exception("실패한 응답 MSG입니다.");
@@ -167,11 +170,12 @@ public class ParsingData {
                 ++nextIndex;
                 ++nextIndex;
                 //실제 데이터 값
+                Log.i("데이터 카운트" , dataCount+"");
                 for(int j = 0; j < dataCount ; j++){
                     msgInfo = data[++nextIndex];
                     tmpArray = (Byte[])tmpMap.get(msgInfo);
                     Arrays.sort(tmpArray);
-                    msgInfo = data[++nextIndex] << 3;
+                    msgInfo = (byte)(data[++nextIndex] >> 3);
                     msgInfo = tmpArray[Arrays.binarySearch(tmpArray,msgInfo)];
                     sendMsg.put(msgInfo, "오류값");
                 }
@@ -185,6 +189,7 @@ public class ParsingData {
 
         }
 
+        Log.i("최종 결과값: ", sendMsg.values()+"");
 
     }
 
