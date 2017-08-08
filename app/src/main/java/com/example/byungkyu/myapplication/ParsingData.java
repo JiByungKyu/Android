@@ -123,7 +123,7 @@ public class ParsingData {
     }
 
     /*Parsing 할 data 처리를 위한 Method*/
-    public void parsingMsg(Byte[] recvMsg) throws Exception {
+    public HashMap<Byte, String> parsingMsg(Byte[] recvMsg) throws Exception {
         if (recvMsg.length == 0 || recvMsg == null) {
             throw new Exception("잘못된 data입니다.");
         }
@@ -134,7 +134,7 @@ public class ParsingData {
         String className = null;
         Byte[] tmpArray;
         HashMap tmpMap;
-        sendMsg = new HashMap<Byte, String>();
+
         obj = responseMap.get(data[POSITIVE_RS_ID]);
 
         if(obj == null){
@@ -156,125 +156,39 @@ public class ParsingData {
 
 
         if(groupCount == 0)
-            return ;
+            return null;
 
-
-        for(int i = 0; i < groupCount; i++){
+        for(int i = 0; i < groupCount; i++) {
             obj = LDR.get(data[++nextIndex]);
             className = obj.getClass().getName();
 
-            if(className.equals("java.util.HashMap")){
-                tmpMap = (HashMap)obj;
+            if (className.equals("java.util.HashMap")) {
+                tmpMap = (HashMap) obj;
                 dataCount = data[++nextIndex];
                 /* 정확히 무슨 역할을 하는지 알수 없었던 2byte */
                 ++nextIndex;
                 ++nextIndex;
                 //실제 데이터 값
-                Log.i("데이터 카운트" , dataCount+"");
-                for(int j = 0; j < dataCount ; j++){
+                Log.i("데이터 카운트", dataCount + "");
+                for (int j = 0; j < dataCount; j++) {
                     msgInfo = data[++nextIndex];
-                    tmpArray = (Byte[])tmpMap.get(msgInfo);
+                    tmpArray = (Byte[]) tmpMap.get(msgInfo);
                     Arrays.sort(tmpArray);
-                    msgInfo = (byte)(data[++nextIndex] >> 3);
-                    msgInfo = tmpArray[Arrays.binarySearch(tmpArray,msgInfo)];
+                    msgInfo = (byte) (data[++nextIndex] >> 3);
+                    msgInfo = tmpArray[Arrays.binarySearch(tmpArray, msgInfo)];
                     sendMsg.put(msgInfo, "오류값");
                 }
-            }
-            else{
-                tmpArray = (Byte[])obj;
+            } else {
+                tmpArray = (Byte[]) obj;
                 Arrays.sort(tmpArray);
-                sendMsg.put(tmpArray[Arrays.binarySearch(tmpArray,data[++nextIndex])], "해당값");
-
+                sendMsg.put(tmpArray[Arrays.binarySearch(tmpArray, data[++nextIndex])], "해당값");
             }
 
         }
+
+
 
         Log.i("최종 결과값: ", sendMsg.values()+"");
-
+        return sendMsg;
     }
-
-
-
-   /* private final byte POSITIVE_RS_ID  = 0;
-    private byte GROUP_COUNT  = 1;
-    private final byte LOCAL_DATA_GROUP_ID  = 2;
-    private byte DATA_COUNT  = 3;
-    private byte group_ID_Index;
-    private byte data_Index;
-    private byte nextData;
-
-    public Byte[] data;
-    private static ParsingData parsingData;
-    Byte[] PRS = {(byte)0xE6, (byte)0xE7,(byte)0xE8,(byte)0xE9,(byte)0xE1,(byte)0xE2};
-
-    HashMap<Byte, Object> responseMap;
-    HashMap<Byte, Object> SID;
-
-
-    Byte[] CFI = {(byte)0x00, (byte)0x01,(byte)0x02,(byte)0x03,(byte)0x04,(byte)0x05,(byte)0x06,(byte)0x07,(byte)0x08,
-            (byte)0x09,(byte)0x10,(byte)0x11,(byte)0x12,(byte)0x13,(byte)0x14,(byte)0x15,(byte)0x16,
-            (byte)0x17,(byte)0x18,(byte)0x19,(byte)0x20,(byte)0x21,(byte)0x22,(byte)0x23,(byte)0x24,
-            (byte)0x25,(byte)0x26,(byte)0x27,(byte)0x28,(byte)0x29,(byte)0x30};
-    //Byte[] MSB = { (byte)};
-
-    static{
-        parsingData = null;
-    }
-    private ParsingData(){
-        data = null;
-        responseMap = new HashMap<Byte, Object>();
-        responseMap.put((byte)0xE6, SID);
-
-        SID.put((byte)0x01, ANALOG);
-        SID.put((byte)0x21, CFI);
-        SID.put((byte)0x0A, DIGITAL_IO);
-
-        nextData = 0;
-    }
-    private ParsingData(Byte[] data) {
-        this.data = data;
-    }
-    public static ParsingData getInstance(){
-        if(parsingData == null){
-            parsingData = new ParsingData();
-        }
-        return parsingData;
-    }
-
-    public void parsingMsg(Byte[]  recvMsg) throws Exception{
-        if(recvMsg.length == 0 || recvMsg == null){
-            throw new Exception("잘못된 data입니다.");
-        }
-        data = recvMsg;
-
-        Object obj = responseMap.get(data[POSITIVE_RS_ID]);
-        if(obj == null){
-            return ;
-        }
-        byte gc = data[GROUP_COUNT];
-
-        group_ID_Index  = LOCAL_DATA_GROUP_ID;
-        data_Index = group_ID_Index;
-        data_Index++;
-
-        for(int i = 0; i < gc; i++){
-            if(obj.getClass().getName().equals("java.util.HashMap")){
-                HashMap<Byte, Object> tmp = (HashMap)obj;
-                obj = tmp.get(data[group_ID_Index]);
-            }else {
-
-                Byte[] tmp = (Byte[]) obj;
-            }
-            DATA_COUNT = 0;
-            for(int j = DATA_COUNT+1; j < data[DATA_COUNT]+DATA_COUNT; j++){
-                i % 2 == 0 ? data[j] : data[j] << 3;
-            }
-            group_ID_Index = LOCAL_DATA_GROUP_ID + DATA_COUNT;
-            data_Index = group_ID_Index;
-            data_Index++;
-        }
-
-
-
-    }*/
 }
