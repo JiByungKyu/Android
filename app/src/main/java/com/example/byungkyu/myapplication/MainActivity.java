@@ -25,10 +25,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //데이터베이스 생성
+        /*//데이터베이스 생성
         DBHelper helper = new DBHelper(this);
 
-        try{
+        try{ㄴ
             db = helper.getWritableDatabase();
             helper.onUpgrade(db,1,2);
         }catch(SQLException e){
@@ -36,14 +36,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         try{
-            /*Positive_response insert 구문*/
+            *//*Positive_response insert 구문*//*
             db.execSQL("insert into positive_response_tb(ID, CONTENT) values(0xE6, '로컬 데이터 읽기');");
             db.execSQL("insert into positive_response_tb(ID, CONTENT) values(0xE7, '로컬 데이터 쓰기');");
             db.execSQL("insert into positive_response_tb(ID, CONTENT) values(0xE8, '주기적 전송 중지');");
             db.execSQL("insert into positive_response_tb(ID, CONTENT) values(0xE9, 'EEPROM 읽기');");
             db.execSQL("insert into positive_response_tb(ID, CONTENT) values(0xE1, 'EEPROM 쓰기');");
             db.execSQL("insert into positive_response_tb(ID, CONTENT) values(0xE2, '고장 정보 읽기');");
-            /*Negative_response insert 구문*/
+            *//*Negative_response insert 구문*//*
             //주로 사용
             db.execSQL("insert into negative_response_tb(ID, CONTENT) values(0x10, 'generalReject');");
             db.execSQL("insert into negative_response_tb(ID, CONTENT) values(0x11, 'serviceNotSupported');");
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             db.execSQL("insert into negative_response_tb(ID, CONTENT) values(0x79, 'incorrectlyByteCountDuringBlockTransfer');");
             db.execSQL("insert into negative_response_tb(ID, CONTENT) values(0x80, 'serviceNotSupportedInActiveDiagnosticMode');");
 
-            /*로컬 데이터 그룹 insert 구문*/
+            *//*로컬 데이터 그룹 insert 구문*//*
             db.execSQL("insert into local_data_group_tb(ID, CONTENT) values(0x01, '아날로그');");
             db.execSQL("insert into local_data_group_tb(ID, CONTENT) values(0x0A, '디지털');");
             db.execSQL("insert into local_data_group_tb(ID, CONTENT) values(0x12, '연료 사용정보');");
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             db.execSQL("insert into local_data_group_tb(ID, CONTENT) values(0x20, '필터/오일 교환주기');");
             db.execSQL("insert into local_data_group_tb(ID, CONTENT) values(0x21, '현재 고장 정보');");
 
-            /*아날로그 insert 구문*/
+            *//*아날로그 insert 구문*//*
             db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x00, '엔진 회전수(Engine RPM)', 0.125, 'rpm');");
             db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x01, '엔진 오일 압력',  4, 'kPa');");
             db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x02, '연료 온도',  1, '℃');");
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x09, '쿨링 팬 밸브', 1, 'mA');");
             db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x10, '유량제어 밸브', 1, 'mA');");
 
-            /*고장정보 insert 구문*/
+            *//*고장정보 insert 구문*//*
             db.execSQL("insert into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, INDEX, FMI) values('E000046-01', '대기압센서(APS)로부터 낮은 " +
                     "공기압 신호 (E56)', 'Low air pressure signal from APS(E56)', 205, 1);");
             db.execSQL("insert into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, INDEX, FMI) values('E000046-19', '대기압센서(APS)로부터 CAN " +
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
        }catch (SQLException e){
 
-        }
+        }*/
 
         setContentView(R.layout.activity_main);
         rcvMsg=(TextView)findViewById(R.id.textView);
@@ -169,7 +169,10 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Byte[] msg = {(byte)0xE6,0x01,0x21,0x01,0x01,0x00,(byte)0xD2,0x10};
+                Byte[] msg = {(byte)0xE6,0x01,0x21,0x1F,0x01,0x00,(byte)0xD2,0x10,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+                        ,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+                        ,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+                        ,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
                 try {
                     parsingData.parsingMsg(msg);
                 } catch (Exception e) {

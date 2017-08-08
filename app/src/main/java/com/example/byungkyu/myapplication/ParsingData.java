@@ -10,6 +10,8 @@ import java.util.HashMap;
  */
 
 public class ParsingData {
+    private ParsingBehaivor parsingBehaivor;
+
     /*임시 LOCAL DATA READER data set*/
 
     private HashMap<Byte, Object> LDR;
@@ -123,25 +125,48 @@ public class ParsingData {
     }
 
     /*Parsing 할 data 처리를 위한 Method*/
-    public HashMap<Byte, String> parsingMsg(Byte[] recvMsg) throws Exception {
+    public void parsingMsg(Byte[] recvMsg) throws Exception {
         if (recvMsg.length == 0 || recvMsg == null) {
             throw new Exception("잘못된 data입니다.");
         }
         data = recvMsg;
         nextIndex = 0;
         groupCount = 0;
-        Object obj = null;
-        String className = null;
-        Byte[] tmpArray;
-        HashMap tmpMap;
 
-        obj = responseMap.get(data[POSITIVE_RS_ID]);
+        msgInfo = data[POSITIVE_RS_ID];
 
-        if(obj == null){
-            throw new Exception("실패한 응답 MSG입니다.");
+        switch (msgInfo){
+            case  (byte)0xE6: {
+                Log.i("여기","와야해");
+                groupCount = data[++nextIndex];
+                if(groupCount == 0)
+                    return;;
+                for(int i = 0; i < groupCount; i++) {
+                    //LDR 종류 체크 데이터
+                    msgInfo = data[++nextIndex];
+                    //LDR에 따른 parsing 알고리즘 적용
+                    setBehaivor(msgInfo);
+                    //해당 LDR이 존재한다면 data 개수 만큼 배열전달
+                    if(parsingBehaivor != null){
+                        dataCount = data[++nextIndex];
+                        parsingBehaivor.parsingMessage(Arrays.copyOfRange(data,nextIndex, nextIndex + (dataCount * 2)+1));
+                    }
+                    //다음 그룹이 존재한다면 nextIndex setting
+                    if(nextIndex + dataCount+1 < data.length){
+                        nextIndex += dataCount;
+                    }
+                }
+
+            }break;
+            case  (byte)0xE7: break;
+            case  (byte)0xE8: break;
+            case  (byte)0xE9: break;
+            case  (byte)0xE1: break;
+            case  (byte)0xE2: break;
+            default: Log.i("여기로","오는가");//throw new Exception("잘못된 데이터 입니다.");
         }
 
-        className = obj.getClass().getName();
+      /*  className = obj.getClass().getName();
 
         if(className.equals("java.util.HashMap")){
             groupCount = data[++nextIndex];
@@ -152,43 +177,25 @@ public class ParsingData {
         else{
             Arrays.sort(LDW);
             msgInfo = LDW[Arrays.binarySearch(LDW, data[++nextIndex])];
+        }*/
+
+    }
+
+    private void setBehaivor(byte id){
+
+        switch (id){
+            case  0x01: break;
+            case  0x0A: break;
+            case  0x12: break;
+            case  0x04: break;
+            case  0x08: break;
+            case  0x09: break;
+            case  0x20: break;
+            case  0x21: parsingBehaivor = CurrentErrorInfo.getInstance(); break;
+            default: parsingBehaivor = null;
         }
-
-
-        if(groupCount == 0)
-            return null;
-
-        for(int i = 0; i < groupCount; i++) {
-            obj = LDR.get(data[++nextIndex]);
-            className = obj.getClass().getName();
-
-            if (className.equals("java.util.HashMap")) {
-                tmpMap = (HashMap) obj;
-                dataCount = data[++nextIndex];
-                /* 정확히 무슨 역할을 하는지 알수 없었던 2byte */
-                ++nextIndex;
-                ++nextIndex;
-                //실제 데이터 값
-                Log.i("데이터 카운트", dataCount + "");
-                for (int j = 0; j < dataCount; j++) {
-                    msgInfo = data[++nextIndex];
-                    tmpArray = (Byte[]) tmpMap.get(msgInfo);
-                    Arrays.sort(tmpArray);
-                    msgInfo = (byte) (data[++nextIndex] >> 3);
-                    msgInfo = tmpArray[Arrays.binarySearch(tmpArray, msgInfo)];
-                    sendMsg.put(msgInfo, "오류값");
-                }
-            } else {
-                tmpArray = (Byte[]) obj;
-                Arrays.sort(tmpArray);
-                sendMsg.put(tmpArray[Arrays.binarySearch(tmpArray, data[++nextIndex])], "해당값");
-            }
-
-        }
-
-
-
-        Log.i("최종 결과값: ", sendMsg.values()+"");
-        return sendMsg;
+    }
+    public ParsingBehaivor getParsingBehaivor(){
+        return parsingBehaivor;
     }
 }
