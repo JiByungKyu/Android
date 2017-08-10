@@ -12,7 +12,9 @@ import java.util.HashMap;
 public class CurrentErrorInfo implements ParsingBehaivor {
     private int nextIndex;
     private static CurrentErrorInfo currentErrorInfo;
+    private String[] errorInfo;
     private HashMap<String, ArrayList<String>> FCL;
+    private CommunicationManager com;
     static{
         currentErrorInfo = null;
     }
@@ -33,7 +35,7 @@ public class CurrentErrorInfo implements ParsingBehaivor {
         int dataCount = 0;
         byte msgInfo = 0;
         StringBuilder indexAndFMI = new StringBuilder();
-
+        String[] data = null;
 
         dataCount = recvMsg[nextIndex];
         Log.i("카운트", dataCount+"");
@@ -47,16 +49,19 @@ public class CurrentErrorInfo implements ParsingBehaivor {
         /*총 오류 개수를 나타내는 데이터*/
         ++nextIndex;
 
+        /*데이터를 저장할 배열 생성*/
+        errorInfo = new String[dataCount-1];
         for(int i=0; i<dataCount-1; i++){
             //index 추가
-            indexAndFMI.append(recvMsg[++nextIndex] & 0xFF);
-            Log.i("LSB", (recvMsg[nextIndex] & 0xFF)+"");
-            indexAndFMI.append(recvMsg[++nextIndex] >> 3);
-            Log.i("MSB", (recvMsg[nextIndex] >> 3)+"");
-            Log.i("데이터 값", indexAndFMI.toString());
+            errorInfo[i] = (recvMsg[++nextIndex] & 0xFF) + "" + (recvMsg[++nextIndex] >> 3);
+           // Log.i("LSB", (recvMsg[nextIndex] & 0xFF)+"");
+           // indexAndFMI.append(recvMsg[++nextIndex] >> 3);
+            //Log.i("MSB", (recvMsg[nextIndex] >> 3)+"");
+
             indexAndFMI.setLength(0);
         }
         //실제 데이터 값
-
+        com = CommunicationManager.getInstance();
+        com.sendMsg(errorInfo);
     }
 }
