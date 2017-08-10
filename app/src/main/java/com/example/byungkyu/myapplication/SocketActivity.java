@@ -5,5 +5,5 @@ package com.example.byungkyu.myapplication;
  */
 
 public interface SocketActivity {
-    public void receiveMsg(byte[] bytes);
+    public void receiveMsg(int type, String data);
 }

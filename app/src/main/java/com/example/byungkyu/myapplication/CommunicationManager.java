@@ -27,6 +27,7 @@ public class CommunicationManager {
     private InputStream inputStream;
     private OutputStream outputStream;
     public boolean Isconnected=false;
+    private ParsingData parsingData = ParsingData.getInstance();
     private static final CommunicationManager communicationManager = new CommunicationManager();
     private CommunicationManager(){
         try {
@@ -38,9 +39,8 @@ public class CommunicationManager {
     }
     public void setSocketActivity(SocketActivity socketActivity){
         this.socketActivity=socketActivity;
-
     }
-    public static CommunicationManager singleton(){return communicationManager;}
+    public static CommunicationManager getInstance(){return communicationManager;}
     public boolean start(){
         connectThread = new Thread(new Runnable() {
             @Override
@@ -130,7 +130,7 @@ public class CommunicationManager {
                         bytes=recvMsg();
                         if(bytes!=null){
                             Log.d("됩니다?", "컥");
-                            socketActivity.receiveMsg(bytes);
+                            parsingData.parsingMsg(bytes);
                         }
                         else
                             Log.d("receive thread:","byte가 null입니다. ");
@@ -143,7 +143,7 @@ public class CommunicationManager {
         });
         receiveThread.start();
     }
-    public void mainReq(){
-
+    public void sendMsg(int [][] bytes){
+       // socketActivity.receiveMsg(3,);
     }
 }
