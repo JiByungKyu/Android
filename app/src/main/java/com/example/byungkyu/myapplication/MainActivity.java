@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
             db = helper.getWritableDatabase();
 
         }catch(SQLException e){
-            helper.onUpgrade(db,2,3);
-            //db = helper.getReadableDatabase();
+            helper.onUpgrade(db,3,4);
+            db = helper.getReadableDatabase();
         }
 
         try{
@@ -92,18 +92,18 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
             db.execSQL("insert into local_data_group_tb(ID, CONTENT) values(0x21, '현재 고장 정보');");
             */
             //아날로그 insert 구문
-            /*db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x00, '엔진 회전수(Engine RPM)', 0.125, 'rpm');");
-            db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x01, '엔진 오일 압력',  4, 'kPa');");
-            db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x02, '연료 온도',  1, '℃');");
-            db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x03, '프론트 펌프 압력', 0.0625, 'bar');");
-            db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x04, '리어 펌프 압력', 0.0625, 'bar');");
-            db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x05, '펌프 1 파일롯 압력', 0.0625, 'bar');");
-            db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x06, '펌프 2 파일롯 압력', 0.0625, 'bar');");
-            db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x07, '펌프 밸브1', 1, 'mA');");
-            db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT)) values(0x08, '펌프 밸브2', 1, 'mA');");
-            db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x09, '쿨링 팬 밸브', 1, 'mA');");
-            db.execSQL("insert into local_data_group_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x10, '유량제어 밸브', 1, 'mA');");
-            */
+            /*db.execSQL("insert into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x00, '엔진 회전수(Engine RPM)', 0.125, 'rpm');");
+            db.execSQL("insert into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x01, '엔진 오일 압력',  4, 'kPa');");
+            db.execSQL("insert into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x02, '연료 온도',  1, '℃');");
+            db.execSQL("insert into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x03, '프론트 펌프 압력', 0.0625, 'bar');");
+            db.execSQL("insert into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x04, '리어 펌프 압력', 0.0625, 'bar');");
+            db.execSQL("insert into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x05, '펌프 1 파일롯 압력', 0.0625, 'bar');");
+            db.execSQL("insert into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x06, '펌프 2 파일롯 압력', 0.0625, 'bar');");
+            db.execSQL("insert into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x07, '펌프 밸브1', 1, 'mA');");
+            db.execSQL("insert into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x08, '펌프 밸브2', 1, 'mA');");
+            db.execSQL("insert into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x09, '쿨링 팬 밸브', 1, 'mA');");
+            db.execSQL("insert into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x10, '유량제어 밸브', 1, 'mA');");*/
+
             //고장정보 insert 구문
             db.execSQL("insert into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('E000046-01', '대기압센서(APS)로부터 낮은 " +
                     "공기압 신호 (E56)', 'Low air pressure signal from APS(E56)', 205, 1);");
@@ -159,7 +159,8 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
                     "2-WAY 좌측고압 전류가 정상 범위보다 높음(단락)', 'FLOW CONTROL P/V (C) 2-WAY RH-OPEN, Current above normal', 102, 6);");
             db.execSQL("insert into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('VPV008-05', '유량제어 비례 감압 밸브 (D) " +
                     "2-WAY 우측고압 전류가 정상 범위보다 낮음(개방)', 'FLOW CONTROL P/V (D) 2-WAY RH-CLOSE, Current below normal', 103, 5);");
-         }catch (SQLException e){
+          //  db.execSQL("delete from fault_code_list_tb");
+        }catch (SQLException e){
             e.getMessage();
         }
 
@@ -170,14 +171,14 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Byte[] msg = {(byte)0xE6,0x01,0x21,0x1F,0x01,0x00,(byte)0xD2,0x10,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+                byte[] msg = {(byte)0xE6,0x01,0x21,0x1F,0x01,0x00,(byte)0xD2,0x10,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
                         ,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
                         ,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
                         ,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
                 try {
 
-                    helper.selectCurrentErrorInfo(db);
-                    obj = parsingData.parsingMsg(msg);
+                    helper.selectAnalog(db);
+                   parsingData.parsingMsg(msg);
 
                 } catch (Exception e) {
                     Log.i("Error: ",e.getMessage());
@@ -192,9 +193,7 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
         catch (Exception e){
 
         }
-        /*msg = Message.obtain();
-        msg.obj=sb.toString();
-        msgHandler.sendMessage(msg);*/
+
     }
     public void receiveMsg(String[][] strings){
         Log.d("받았냐??", "컥");
@@ -208,11 +207,7 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
         msg.obj=sb.toString();
         msgHandler.sendMessage(msg);
     }
-   /* public void receiveFaultMsg(String [][] faultMsg){
-        msg = Message.obtain();
-        msg.obj=sb.toString();
-        msgHandler.sendMessage(msg);
-    }*/
+
     public void process() throws IOException{
         communicationManager.sendMsg();
     }

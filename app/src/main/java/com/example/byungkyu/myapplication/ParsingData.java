@@ -3,14 +3,12 @@ package com.example.byungkyu.myapplication;
 import android.util.Log;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * Created by YJ on 2017-08-01.
  */
 
 public class ParsingData {
-    private ParsingBehaivor parsingBehaivor;
     /*배열의 첫번째 방은 PRI 지정*/
     private final byte POSITIVE_RS_ID = 0;
     private static ParsingData parsingData;
@@ -19,8 +17,36 @@ public class ParsingData {
     private byte groupCount;
     private byte dataCount;
     private byte msgInfo;
-    private Byte[] data;
-    private Object obj;
+    private byte[] data;
+    private MainDataProcess mainDataProcess;
+
+    private final byte LDR = (byte)0xE6;
+    //private HashMap<Byte, Object> LDR;
+    /*임시 LOCAL DATA WRITER data set*/
+    private final byte LDW = (byte) 0xE7;
+    //private Byte[] LDW = {(byte) 0xA6, (byte) 0xA7, (byte) 0xA8, (byte) 0xA9, (byte) 0xA1, (byte) 0xA2};
+
+    /*임시 Periodic Send Stop */
+    private final byte PSS = (byte) 0xE8;
+
+    /*임시 EEPROM READ */
+    private final byte ERR = (byte) 0xE9;
+    /*임시 EEPROM WRITER */
+    private final byte ERW = (byte) 0xE1;
+
+    /*임시 ERROR INFORMATION READER */
+    private final byte EIR = (byte) 0xE2;
+    private final byte ANALOG = (byte) 0x01;
+    private final byte DIGITAL_IO = (byte) 0x0A;
+    private final byte FUEL_USE_INFO = (byte) 0x12;
+    private final byte OPERATION_TIME = (byte) 0x04;
+    private final byte FILTER_USETIME = (byte) 0x08;
+    private final byte FILTER_INIT = (byte) 0x09;
+    private final byte FILTER_CHANGE = (byte) 0x20;
+    private final byte CURRENT_ERROR_INFO = (byte) 0x21;
+
+
+
 
     /*ParsingData class 변수 초기화*/
     static {
@@ -30,10 +56,7 @@ public class ParsingData {
     /*데이터 초기화*/
     private ParsingData() {
         data = null;
-    }
-
-    private ParsingData(Byte[] data) {
-        this.data = data;
+        mainDataProcess = new MainDataProcess();
     }
 
     /*ParsingData 싱글톤 패턴*/
@@ -45,7 +68,7 @@ public class ParsingData {
     }
 
     /*Parsing 할 data 처리를 위한 Method*/
-    public Object parsingMsg(Byte[] recvMsg) throws Exception {
+    public void parsingMsg(byte[] recvMsg) throws Exception {
         if (recvMsg.length == 0 || recvMsg == null) {
             throw new Exception("잘못된 data입니다.");
         }
@@ -53,30 +76,67 @@ public class ParsingData {
         nextIndex = 0;
         groupCount = 0;
 
+        int LSB,MSB,ID,UNIT;
+
         msgInfo = data[POSITIVE_RS_ID];
 
         switch (msgInfo){
-            case  (byte)0xE6: {
+            case  LDR: {
                 groupCount = data[++nextIndex];
                 if(groupCount == 0)
-                    return null;
+                    return ;
                 for(int i = 0; i < groupCount; i++) {
                     //LDR 종류 체크 데이터
                     msgInfo = data[++nextIndex];
-                    //LDR에 따른 parsing 알고리즘 적용
-                    setBehaivor(msgInfo);
-                    //해당 LDR이 존재한다면 data 개수 만큼 배열전달
-                    if(parsingBehaivor != null){
-                        dataCount = data[++nextIndex];
-                        parsingBehaivor.parsingMessage(Arrays.copyOfRange(data,nextIndex, nextIndex + (dataCount * 2)+1));
-                    }
-                    //다음 그룹이 존재한다면 nextIndex setting
-                    if(nextIndex + dataCount+1 < data.length){
-                        nextIndex += dataCount;
+                    //data 개수 파악
+                    dataCount = data[++nextIndex];
+                    switch (msgInfo){
+                        case ANALOG :
+                            int[] analogParsedData = new int[dataCount];
+                            //data 값만 가져오기
+                            for(int j=0;j<dataCount;j++){
+                                UNIT = (data[++nextIndex] << 8) | (data[++nextIndex] & 0xff);
+                                analogParsedData[j] = UNIT;
+                            }
+                            mainDataProcess.analogDataProcessing(analogParsedData);
+                        break;
+                        case DIGITAL_IO :
+
+                        case FUEL_USE_INFO :
+                            /*LSB=data[++nextIndex];
+                            MSB=data[++nextIndex];
+                            for(int j=0;j<dataCount;j++){
+                                ID=data[++nextIndex];
+                                UNIT=data[++nextIndex];
+                                parsedData[j][0] = ID;
+                                parsedData[j][1] = UNIT;
+                            } break;*/
+
+                        case OPERATION_TIME :
+                        case FILTER_USETIME :
+                        case FILTER_INIT :
+                        case FILTER_CHANGE :
+                        case CURRENT_ERROR_INFO :
+                            LSB=data[++nextIndex];
+                            MSB=data[++nextIndex];
+                            int numberOfError=((MSB&0xff)<<8)+(LSB&0xff);
+                            int[][] ceiParsedData = new int[numberOfError][2];
+                            //Error, FMI code
+                            for(int j=0;j<dataCount-1;j++){
+                                LSB=data[++nextIndex];
+                                MSB=data[++nextIndex];
+                                if(LSB != 0 && MSB !=0){
+                                    ceiParsedData[j][0]=LSB&0xff;
+                                    ceiParsedData[j][1]=(MSB>>3)&0x1f;
+                                }
+                            }
+                            mainDataProcess.currentErrorInfoProcessing(ceiParsedData);
+                            break;
+
                     }
                 }
 
-            } return obj;
+            }
             case  (byte)0xE7: break;
             case  (byte)0xE8: break;
             case  (byte)0xE9: break;
@@ -84,24 +144,6 @@ public class ParsingData {
             case  (byte)0xE2: break;
             default: Log.i("여기로","오는가");//throw new Exception("잘못된 데이터 입니다.");
         }
-        return null;
-    }
-
-    private void setBehaivor(byte id){
-
-        switch (id){
-            case  0x01: break;
-            case  0x0A: break;
-            case  0x12: break;
-            case  0x04: break;
-            case  0x08: break;
-            case  0x09: break;
-            case  0x20: break;
-            case  0x21: parsingBehaivor = CurrentErrorInfo.getInstance(); break;
-            default: parsingBehaivor = null;
-        }
-    }
-    public ParsingBehaivor getParsingBehaivor(){
-        return parsingBehaivor;
+        return ;
     }
 }

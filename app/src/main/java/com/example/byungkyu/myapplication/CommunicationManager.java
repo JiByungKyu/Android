@@ -17,7 +17,7 @@ public class CommunicationManager {
     RequestData requestData = new RequestData();
     Thread connectThread;
     Thread receiveThread;
-    SocketActivity socketActivity;
+    public static SocketActivity socketActivity;
     private String ip = "192.168.2.99";
     private int port = 5000;
     private Socket socket;
@@ -142,14 +142,14 @@ public class CommunicationManager {
         });
         receiveThread.start();
     }
-    public void sendMsg(String[] bytes){
-        int dataCount = bytes.length;
+    public void sendToActivityMsg(String[] strings){
+        int dataCount = strings.length;
         Log.i("카운터", dataCount+"");
         String[][] info = new String[dataCount][3];
         for(int i=0; i< dataCount; i++){
-            info[i] = DBHelper.map.get(bytes[i]);
+            info[i] = DBHelper.ceiMap.get(strings[i]);
         }
 
-            socketActivity.receiveMsg(info);
+        socketActivity.receiveMsg(info);
     }
 }

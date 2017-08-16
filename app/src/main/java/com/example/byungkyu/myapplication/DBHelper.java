@@ -4,10 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -18,12 +14,14 @@ public class DBHelper extends SQLiteOpenHelper{
 
     private static final String DATABASE_NAME = "gusto.db";
     private static final int DATABASE_VERSION = 1;
-    public static HashMap<String, String[]> map;
+    public static HashMap<String, String[]> ceiMap;
+    public static HashMap<String, Double> analogMap;
     private String[] info;
 
     public DBHelper(Context context) {
         super(context,DATABASE_NAME, null, DATABASE_VERSION);
-        map = new HashMap<String, String[]>();
+        analogMap = new HashMap<String, Double>();
+        ceiMap = new HashMap<String, String[]>();
         info = new String[3];
     }
 
@@ -33,24 +31,24 @@ public class DBHelper extends SQLiteOpenHelper{
         db.execSQL("create table if not exists negative_response_tb(_id integer primary key autoincrement,ID byte, CONTENT text);");
         db.execSQL("create table if not exists local_data_group_tb(_id integer primary key autoincrement,ID byte, CONTENT text);");
         //아날로그 테이블은 check 함수를 적용하여 아니면 exception 이 생기게 해야한다.
-        db.execSQL("create table if not exists analog_tb(_id integer primary key autoincrement,ID byte, CONTENT text, UNITVALUE number, UNIT text);");
+        db.execSQL("create table if not exists analog_tb(_id integer primary key autoincrement,ID byte, CONTENT text, UNITVALUE real, UNIT text);");
         //연료 사용정보 역시 check 함수를 사용해야할 것 같다.
-        db.execSQL("create table if not exists fuel_use_tb(_id integer primary key autoincrement,ID byte, CONTENT text, UNITVALUE number, UNIT text);");
+        db.execSQL("create table if not exists fuel_use_tb(_id integer primary key autoincrement,ID byte, CONTENT text, UNITVALUE real, UNIT text);");
         //가동시간 사용정보 역시 check 함수를 사용해야할 것 같다.
-        db.execSQL("create table if not exists operation_time_tb(_id integer primary key autoincrement,ID byte, CONTENT text, UNITVALUE number, UNIT text);");
+        db.execSQL("create table if not exists operation_time_tb(_id integer primary key autoincrement,ID byte, CONTENT text, UNITVALUE real, UNIT text);");
         //필터오일 사용정보 역시 check 함수를 사용해야할 것 같다.
-        db.execSQL("create table if not exists filter_oil_use_tb(_id integer primary key autoincrement,ID byte, CONTENT text, UNITVALUE number, UNIT text);");
+        db.execSQL("create table if not exists filter_oil_use_tb(_id integer primary key autoincrement,ID byte, CONTENT text, UNITVALUE real, UNIT text);");
         //필터오일 교환 주기정보 역시 check 함수를 사용해야할 것 같다.
-        db.execSQL("create table if not exists filter_change_period_tb(_id integer primary key autoincrement,ID byte, CONTENT text, UNITVALUE number, UNIT text);");
+        db.execSQL("create table if not exists filter_change_period_tb(_id integer primary key autoincrement,ID byte, CONTENT text, UNITVALUE real, UNIT text);");
         //오류 고장 정보
-        //db.execSQL("create table if not exists fault_code_list_tb(_id integer primary key autoincrement,ID text, CONTENT_KR text, CONTENT_ER text, FCL_INDEX byte, FMI byte);");
+        db.execSQL("create table if not exists fault_code_list_tb(_id integer primary key autoincrement,ID text, CONTENT_KR text, CONTENT_ER text, FCL_INDEX byte, FMI byte);");
 
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("drop table if exits fault_code_list_tb");
+        //db.execSQL("drop table if exits fault_code_list_tb");
         System.out.println("삭제");
         onCreate(db);
     }
@@ -72,7 +70,23 @@ public class DBHelper extends SQLiteOpenHelper{
 
             System.out.println("ID :" + ID + ",KR : " + CONTENT_KR + ",ER : " +CONTENT_ER + ",INDEX : " +FCL_INDEX
                     + "FMI : " + FMI);
-            map.put(FCL_INDEX+""+FMI,info);
+            ceiMap.put(FCL_INDEX+""+FMI,info);
+        }
+    }
+
+    public void selectAnalog(SQLiteDatabase db){
+        Cursor cursor;
+        cursor  = db.rawQuery("select * from analog_tb;",null);
+        System.out.println(cursor);
+        while(cursor.moveToNext()){
+
+            int ID = cursor.getInt(1);
+            String CONTENT = cursor.getString(2);
+            double unitValue = cursor.getDouble(3);
+            String unit = cursor.getString(4);
+
+            System.out.println("ID :" + ID + ",Content : " + CONTENT + ",unitValue : " +unitValue + ",unit : " +unit);
+           // map.put(FCL_INDEX+""+FMI,info);
         }
     }
 }
