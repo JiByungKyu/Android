@@ -3,6 +3,8 @@ package com.example.byungkyu.myapplication;
 import android.util.Log;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Properties;
 
 /**
  * Created by YJ on 2017-08-01.
@@ -18,7 +20,8 @@ public class ParsingData {
     private byte dataCount;
     private byte msgInfo;
     private byte[] data;
-    private MainDataProcess mainDataProcess;
+    private DataProcessor dataProcessor;
+    private HashMap<Byte, Object> dataSet;
 
     private final byte LDR = (byte)0xE6;
     //private HashMap<Byte, Object> LDR;
@@ -56,7 +59,7 @@ public class ParsingData {
     /*데이터 초기화*/
     private ParsingData() {
         data = null;
-        mainDataProcess = new MainDataProcess();
+        dataProcessor = null;
     }
 
     /*ParsingData 싱글톤 패턴*/
@@ -85,6 +88,10 @@ public class ParsingData {
                 groupCount = data[++nextIndex];
                 if(groupCount == 0)
                     return ;
+
+                if(CommunicationManager.socketActivity instanceof MainActivity){
+                    dataProcessor = MainDataProcess.getInstance();
+                }
                 for(int i = 0; i < groupCount; i++) {
                     //LDR 종류 체크 데이터
                     msgInfo = data[++nextIndex];
@@ -95,22 +102,23 @@ public class ParsingData {
                             int[] analogParsedData = new int[dataCount];
                             //data 값만 가져오기
                             for(int j=0;j<dataCount;j++){
-                                UNIT = (data[++nextIndex] << 8) | (data[++nextIndex] & 0xff);
+                                LSB = data[++nextIndex] & 0xff ;
+                                MSB = data[++nextIndex] & 0xff ;
+                                UNIT = (LSB << 8) | (MSB & 0xff);
                                 analogParsedData[j] = UNIT;
                             }
-                            mainDataProcess.analogDataProcessing(analogParsedData);
+                            dataSet.put(ANALOG, analogParsedData);
                         break;
                         case DIGITAL_IO :
 
                         case FUEL_USE_INFO :
-                            /*LSB=data[++nextIndex];
-                            MSB=data[++nextIndex];
+                            int[] fuelParsedData = new int[dataCount];
                             for(int j=0;j<dataCount;j++){
-                                ID=data[++nextIndex];
-                                UNIT=data[++nextIndex];
-                                parsedData[j][0] = ID;
-                                parsedData[j][1] = UNIT;
-                            } break;*/
+                                UNIT = (data[++nextIndex] << 8) | (data[++nextIndex] & 0xff);
+                            }
+                            dataSet.put(FUEL_USE_INFO, fuelParsedData);
+
+                            break;
 
                         case OPERATION_TIME :
                         case FILTER_USETIME :
@@ -130,13 +138,14 @@ public class ParsingData {
                                     ceiParsedData[j][1]=(MSB>>3)&0x1f;
                                 }
                             }
-                            mainDataProcess.currentErrorInfoProcessing(ceiParsedData);
+                            dataSet.put(CURRENT_ERROR_INFO,ceiParsedData);
                             break;
 
                     }
                 }
 
             }
+
             case  (byte)0xE7: break;
             case  (byte)0xE8: break;
             case  (byte)0xE9: break;
@@ -144,6 +153,6 @@ public class ParsingData {
             case  (byte)0xE2: break;
             default: Log.i("여기로","오는가");//throw new Exception("잘못된 데이터 입니다.");
         }
-        return ;
+        dataProcessor.receiveMsg(dataSet);
     }
 }

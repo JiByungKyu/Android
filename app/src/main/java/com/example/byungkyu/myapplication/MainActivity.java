@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements SocketActivity{
     ParsingData parsingData = ParsingData.getInstance();
@@ -195,9 +196,12 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
         }
 
     }
-    public void receiveMsg(String[][] strings){
+    public void receiveMsg(HashMap<Byte,Object> dataSet){
         Log.d("받았냐??", "컥");
-        this.strings=strings;
+        //받아온 데이터셋을 알맞은 자리에 출력을 해야겠찌
+        if(dataSet.containsKey()){
+
+        }
         for(String[] str: this.strings){
             if(str!=null){
                 sb.append("오류코드 : " + str[0] + ", 한글 : " + str[1] + ", 영어 : " + str[2] +"\n");

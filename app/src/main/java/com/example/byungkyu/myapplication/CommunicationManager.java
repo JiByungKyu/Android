@@ -142,14 +142,4 @@ public class CommunicationManager {
         });
         receiveThread.start();
     }
-    public void sendToActivityMsg(String[] strings){
-        int dataCount = strings.length;
-        Log.i("카운터", dataCount+"");
-        String[][] info = new String[dataCount][3];
-        for(int i=0; i< dataCount; i++){
-            info[i] = DBHelper.ceiMap.get(strings[i]);
-        }
-
-        socketActivity.receiveMsg(info);
-    }
 }
