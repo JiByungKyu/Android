@@ -5,6 +5,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import static android.content.ContentValues.TAG;
@@ -14,9 +15,9 @@ import static android.content.ContentValues.TAG;
  */
 
 public class CommunicationManager {
-    RequestData requestData = new RequestData();
     Thread connectThread;
     Thread receiveThread;
+    Thread sendThread;
     public static SocketActivity socketActivity;
     private String ip = "192.168.2.99";
     private int port = 5000;
@@ -25,7 +26,7 @@ public class CommunicationManager {
     byte[] bytes;
     int gap=250;
     private InputStream inputStream;
-    private OutputStream outputStream;
+    private OutputStream outputStream = null;
     public boolean Isconnected=false;
     private ParsingData parsingData = ParsingData.getInstance();
     private static final CommunicationManager communicationManager = new CommunicationManager();
@@ -52,7 +53,7 @@ public class CommunicationManager {
                     socket = new Socket(ip, port);
                     //}
                     //if(socket.isConnected()==false) {
-                    //    socket.connect(new InetSocketAddress(ip, port));
+                        //socket.connect(new InetSocketAddress(ip, port));
                     //}
                     outputStream = socket.getOutputStream();
                     inputStream = socket.getInputStream();
@@ -75,24 +76,30 @@ public class CommunicationManager {
         }
     }
     public void sendMsg(){
-        try {
-            if(socketActivity instanceof MainActivity) {
-                outputStream.write(requestData.reqTest());
-                Thread.sleep(gap);
-                // outputStream.flush();
-                outputStream.write(requestData.reqFault());
-                Thread.sleep(gap);
-                outputStream.write(requestData.reqFuel());
-                Thread.sleep(gap);
-                outputStream.write(requestData.reqOpTime());
-                Thread.sleep(gap);
-                outputStream.write(requestData.reqPump());
-                Log.d("보낸다, 연결됨?", "" + Isconnected);
+        sendThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if(socketActivity instanceof MainActivity) {
+                        /*outputStream.write(Data.reqReadTest.toByteArray());
+                        Thread.sleep(gap);*/
+                        //outputStream.flush();
+                        outputStream.write(Data.reqReadFault.toByteArray());
+                        Thread.sleep(gap);
+                        outputStream.write(Data.reqReadFuel.toByteArray());
+                        Thread.sleep(gap);
+                        outputStream.write(Data.reqReadOpTime.toByteArray());
+                        Thread.sleep(gap);
+                        outputStream.write(Data.reqReadPump.toByteArray());
+                        Log.d("보낸다, 연결됨?", "" + Isconnected);
+                    }
+                }
+                catch(Exception e){
+                    Log.e(TAG,"ERROR : "+e);
+                }
             }
-        }
-        catch(Exception e){
-            Log.e(TAG,"ERROR : "+e);
-        }
+        });
+        sendThread.start();
     }
     public byte[] recvMsg()throws IOException {
         byte sum;
@@ -129,7 +136,7 @@ public class CommunicationManager {
                         bytes=recvMsg();
                         if(bytes!=null){
                             Log.d("됩니다?", "컥");
-                            //parsingData.parsingMsg(bytes);
+                            parsingData.parsingMsg(bytes);
                         }
                         else
                             Log.d("receive thread:","byte가 null입니다. ");
@@ -141,5 +148,15 @@ public class CommunicationManager {
             }
         });
         receiveThread.start();
+    }
+    public void sendToActivityMsg(String[] strings){
+        int dataCount = strings.length;
+        Log.i("카운터", dataCount+"");
+        String[][] info = new String[dataCount][3];
+        for(int i=0; i< dataCount; i++){
+            info[i] = DBHelper.ceiMap.get(strings[i]);
+        }
+
+        //socketActivity.receiveMsg(info);
     }
 }

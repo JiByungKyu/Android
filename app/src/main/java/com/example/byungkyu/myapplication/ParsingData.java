@@ -2,9 +2,9 @@ package com.example.byungkyu.myapplication;
 
 import android.util.Log;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Properties;
+
+import static com.example.byungkyu.myapplication.Data.PTS;
 
 /**
  * Created by YJ on 2017-08-01.
@@ -23,34 +23,6 @@ public class ParsingData {
     private DataProcessor dataProcessor;
     private HashMap<Byte, Object> dataSet;
 
-    private final byte LDR = (byte)0xE6;
-    //private HashMap<Byte, Object> LDR;
-    /*임시 LOCAL DATA WRITER data set*/
-    private final byte LDW = (byte) 0xE7;
-    //private Byte[] LDW = {(byte) 0xA6, (byte) 0xA7, (byte) 0xA8, (byte) 0xA9, (byte) 0xA1, (byte) 0xA2};
-
-    /*임시 Periodic Send Stop */
-    private final byte PSS = (byte) 0xE8;
-
-    /*임시 EEPROM READ */
-    private final byte ERR = (byte) 0xE9;
-    /*임시 EEPROM WRITER */
-    private final byte ERW = (byte) 0xE1;
-
-    /*임시 ERROR INFORMATION READER */
-    private final byte EIR = (byte) 0xE2;
-    private final byte ANALOG = (byte) 0x01;
-    private final byte DIGITAL_IO = (byte) 0x0A;
-    private final byte FUEL_USE_INFO = (byte) 0x12;
-    private final byte OPERATION_TIME = (byte) 0x04;
-    private final byte FILTER_USETIME = (byte) 0x08;
-    private final byte FILTER_INIT = (byte) 0x09;
-    private final byte FILTER_CHANGE = (byte) 0x20;
-    private final byte CURRENT_ERROR_INFO = (byte) 0x21;
-
-
-
-
     /*ParsingData class 변수 초기화*/
     static {
         parsingData = null;
@@ -60,6 +32,7 @@ public class ParsingData {
     private ParsingData() {
         data = null;
         dataProcessor = null;
+        dataSet = new HashMap<Byte, Object>();
     }
 
     /*ParsingData 싱글톤 패턴*/
@@ -84,7 +57,7 @@ public class ParsingData {
         msgInfo = data[POSITIVE_RS_ID];
 
         switch (msgInfo){
-            case  LDR: {
+            case  Data.LDR: {
                 groupCount = data[++nextIndex];
                 if(groupCount == 0)
                     return ;
@@ -95,10 +68,11 @@ public class ParsingData {
                 for(int i = 0; i < groupCount; i++) {
                     //LDR 종류 체크 데이터
                     msgInfo = data[++nextIndex];
+                    Log.i("LDR종류",msgInfo+"");
                     //data 개수 파악
                     dataCount = data[++nextIndex];
                     switch (msgInfo){
-                        case ANALOG :
+                        case Data.ANALOG :
                             int[] analogParsedData = new int[dataCount];
                             //data 값만 가져오기
                             for(int j=0;j<dataCount;j++){
@@ -107,30 +81,31 @@ public class ParsingData {
                                 UNIT = (LSB << 8) | (MSB & 0xff);
                                 analogParsedData[j] = UNIT;
                             }
-                            dataSet.put(ANALOG, analogParsedData);
+                            dataSet.put(Data.ANALOG, analogParsedData);
                         break;
-                        case DIGITAL_IO :
+                        case Data.DIGITAL_IO :
 
-                        case FUEL_USE_INFO :
+                        case Data.FUEL_USE_INFO :
                             int[] fuelParsedData = new int[dataCount];
                             for(int j=0;j<dataCount;j++){
                                 UNIT = (data[++nextIndex] << 8) | (data[++nextIndex] & 0xff);
+                                fuelParsedData[j] = UNIT;
                             }
-                            dataSet.put(FUEL_USE_INFO, fuelParsedData);
+                            dataSet.put(Data.FUEL_USE_INFO, fuelParsedData);
 
                             break;
 
-                        case OPERATION_TIME :
-                        case FILTER_USETIME :
-                        case FILTER_INIT :
-                        case FILTER_CHANGE :
-                        case CURRENT_ERROR_INFO :
+                        case Data.OPERATION_TIME :
+                        case Data.FILTER_USETIME :
+                        case Data.FILTER_INIT :
+                        case Data.FILTER_CHANGE :
+                        case Data.CURRENT_ERROR_INFO :
                             LSB=data[++nextIndex];
                             MSB=data[++nextIndex];
                             int numberOfError=((MSB&0xff)<<8)+(LSB&0xff);
                             int[][] ceiParsedData = new int[numberOfError][2];
                             //Error, FMI code
-                            for(int j=0;j<dataCount-1;j++){
+                            for(int j=0;j<numberOfError;j++){
                                 LSB=data[++nextIndex];
                                 MSB=data[++nextIndex];
                                 if(LSB != 0 && MSB !=0){
@@ -138,21 +113,21 @@ public class ParsingData {
                                     ceiParsedData[j][1]=(MSB>>3)&0x1f;
                                 }
                             }
-                            dataSet.put(CURRENT_ERROR_INFO,ceiParsedData);
+                            dataSet.put(Data.CURRENT_ERROR_INFO,ceiParsedData);
                             break;
 
                     }
+                    dataProcessor.processingMsg(dataSet);
                 }
 
-            }
-
-            case  (byte)0xE7: break;
-            case  (byte)0xE8: break;
-            case  (byte)0xE9: break;
-            case  (byte)0xE1: break;
-            case  (byte)0xE2: break;
+            }break;
+            case  Data.LDW: break;
+            case  Data.PTS: break;
+            case  Data.ERR: break;
+            case  Data.ERW: break;
+            case  Data.EIR: break;
             default: Log.i("여기로","오는가");//throw new Exception("잘못된 데이터 입니다.");
         }
-        dataProcessor.receiveMsg(dataSet);
+
     }
 }

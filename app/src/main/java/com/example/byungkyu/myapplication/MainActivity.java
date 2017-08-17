@@ -16,7 +16,6 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements SocketActivity{
     ParsingData parsingData = ParsingData.getInstance();
-    RequestData requestData = new RequestData();
     ReceiveData receiveData = new ReceiveData();
     private Object obj;
     SQLiteDatabase db;
@@ -125,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
             db.execSQL("insert into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('E000091-02', '보조 악셀페달이 페달고장이나 " +
                     "다른 결함으로 사용 중', 'Auxiliary accelerator pedal is used due to pedal faulty or other.', 210, 2);");
             db.execSQL("insert into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('E000091-09', '악셀 페달 고장 혹은 오류 (via CAN)', 'Acc pedal faulty or error via can.', 210, 9);");
-            db.execSQL("insert into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('E000091-10', 악셀 페달 적절하지 않음, 고장', 'Accelerator pedal not plausible, faulty', 210, 10);");
+            db.execSQL("insert into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('E000091-10', '악셀 페달 적절하지 않음, 고장', 'Accelerator pedal not plausible, faulty', 210, 10);");
             db.execSQL("insert into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('E000091-19', '악셀 페달값이 적절한 범위에서 벗어남 (via CAN)', 'Acc pedal value out of valid range (via CAN)', 210, 19);");
             db.execSQL("insert into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('VCO001-11', '계기판 통신이상', 'GAUGE PANEL ERROR', 11, 11);");
             db.execSQL("insert into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('VCO002-11', 'E-ECU 통신이상', 'E-ECU ERROR', 23, 11);");
@@ -160,56 +159,42 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
                     "2-WAY 좌측고압 전류가 정상 범위보다 높음(단락)', 'FLOW CONTROL P/V (C) 2-WAY RH-OPEN, Current above normal', 102, 6);");
             db.execSQL("insert into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('VPV008-05', '유량제어 비례 감압 밸브 (D) " +
                     "2-WAY 우측고압 전류가 정상 범위보다 낮음(개방)', 'FLOW CONTROL P/V (D) 2-WAY RH-CLOSE, Current below normal', 103, 5);");
-          //  db.execSQL("delete from fault_code_list_tb");
+            //  db.execSQL("delete from fault_code_list_tb");
         }catch (SQLException e){
             e.getMessage();
         }
 
-        communicationManager.setSocketActivity(this);
         setContentView(R.layout.activity_main);
         rcvMsg=(TextView)findViewById(R.id.textView);
         btn =  (Button)findViewById(R.id.button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                byte[] msg = {(byte)0xE6,0x01,0x21,0x1F,0x01,0x00,(byte)0xD2,0x10,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+                /*byte[] msg = {(byte)0xE6,0x01,0x21,0x1F,0x01,0x00,(byte)0xD2,0x10,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
                         ,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
                         ,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
-                        ,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+                        ,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};*/
                 try {
 
-                    helper.selectAnalog(db);
-                   parsingData.parsingMsg(msg);
+                    //helper.selectAnalog(db);
+                    //parsingData.parsingMsg(msg);
 
                 } catch (Exception e) {
                     Log.i("Error: ",e.getMessage());
                 }
             }
         });
+        communicationManager.setSocketActivity(this);
 
         try{
+            helper.selectCurrentErrorInfo(db);
             process();
-            //
+
         }
         catch (Exception e){
 
         }
 
-    }
-    public void receiveMsg(HashMap<Byte,Object> dataSet){
-        Log.d("받았냐??", "컥");
-        //받아온 데이터셋을 알맞은 자리에 출력을 해야겠찌
-        if(dataSet.containsKey()){
-
-        }
-        for(String[] str: this.strings){
-            if(str!=null){
-                sb.append("오류코드 : " + str[0] + ", 한글 : " + str[1] + ", 영어 : " + str[2] +"\n");
-            }
-        }
-        msg = Message.obtain();
-        msg.obj=sb.toString();
-        msgHandler.sendMessage(msg);
     }
 
     public void process() throws IOException{
@@ -235,5 +220,20 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
     };
     public void messageDisplay(String serverMsg){
         rcvMsg.setText(""+serverMsg);
+    }
+
+    @Override
+    public void receiveMsg(HashMap<Byte, Object> dataSet) {
+        Log.i("여기엔","왓지");
+        if(dataSet.containsKey(Data.CURRENT_ERROR_INFO)){
+            String[][] strings = (String[][]) dataSet.get(Data.CURRENT_ERROR_INFO);
+          for(String[] str:strings){
+              sb.append("오류코드 : " + str[0] + ", 한글 : " + str[1] + ", 영어 : " + str[2] +"\n");
+        }
+            msg = Message.obtain();
+            msg.obj=sb.toString();
+            msgHandler.sendMessage(msg);
+        }
+
     }
 }
