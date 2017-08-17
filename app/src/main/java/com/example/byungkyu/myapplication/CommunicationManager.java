@@ -14,7 +14,6 @@ import static android.content.ContentValues.TAG;
  */
 
 public class CommunicationManager {
-    RequestData requestData = new RequestData();
     Thread connectThread;
     Thread receiveThread;
     public static SocketActivity socketActivity;
@@ -77,16 +76,16 @@ public class CommunicationManager {
     public void sendMsg(){
         try {
             if(socketActivity instanceof MainActivity) {
-                outputStream.write(requestData.reqTest());
+                outputStream.write(Data.reqReadTest.toByteArray());
                 Thread.sleep(gap);
                 // outputStream.flush();
-                outputStream.write(requestData.reqFault());
+                outputStream.write(Data.reqReadFault.toByteArray());
                 Thread.sleep(gap);
-                outputStream.write(requestData.reqFuel());
+                outputStream.write(Data.reqReadFuel.toByteArray());
                 Thread.sleep(gap);
-                outputStream.write(requestData.reqOpTime());
+                outputStream.write(Data.reqReadOpTime.toByteArray());
                 Thread.sleep(gap);
-                outputStream.write(requestData.reqPump());
+                outputStream.write(Data.reqReadPump.toByteArray());
                 Log.d("보낸다, 연결됨?", "" + Isconnected);
             }
         }

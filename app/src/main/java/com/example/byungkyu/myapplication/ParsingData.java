@@ -2,52 +2,38 @@ package com.example.byungkyu.myapplication;
 
 import android.util.Log;
 
-import java.util.Arrays;
+import static com.example.byungkyu.myapplication.Data.ANALOG;
+import static com.example.byungkyu.myapplication.Data.CURRENT_ERROR_INFO;
+import static com.example.byungkyu.myapplication.Data.DIGITAL_IO;
+import static com.example.byungkyu.myapplication.Data.EIR;
+import static com.example.byungkyu.myapplication.Data.ERR;
+import static com.example.byungkyu.myapplication.Data.ERW;
+import static com.example.byungkyu.myapplication.Data.FILTER_CHANGE;
+import static com.example.byungkyu.myapplication.Data.FILTER_INIT;
+import static com.example.byungkyu.myapplication.Data.FILTER_USETIME;
+import static com.example.byungkyu.myapplication.Data.FUEL_USE_INFO;
+import static com.example.byungkyu.myapplication.Data.LDW;
+import static com.example.byungkyu.myapplication.Data.OPERATION_TIME;
+import static com.example.byungkyu.myapplication.Data.PTS;
 
 /**
  * Created by YJ on 2017-08-01.
  */
 
 public class ParsingData {
+
     /*배열의 첫번째 방은 PRI 지정*/
     private final byte POSITIVE_RS_ID = 0;
-    private static ParsingData parsingData;
-    /*각각 activity에 보낼 데이터 셋 */
+
+
+
     private byte nextIndex;
     private byte groupCount;
     private byte dataCount;
     private byte msgInfo;
     private byte[] data;
     private MainDataProcess mainDataProcess;
-
-    private final byte LDR = (byte)0xE6;
-    //private HashMap<Byte, Object> LDR;
-    /*임시 LOCAL DATA WRITER data set*/
-    private final byte LDW = (byte) 0xE7;
-    //private Byte[] LDW = {(byte) 0xA6, (byte) 0xA7, (byte) 0xA8, (byte) 0xA9, (byte) 0xA1, (byte) 0xA2};
-
-    /*임시 Periodic Send Stop */
-    private final byte PSS = (byte) 0xE8;
-
-    /*임시 EEPROM READ */
-    private final byte ERR = (byte) 0xE9;
-    /*임시 EEPROM WRITER */
-    private final byte ERW = (byte) 0xE1;
-
-    /*임시 ERROR INFORMATION READER */
-    private final byte EIR = (byte) 0xE2;
-    private final byte ANALOG = (byte) 0x01;
-    private final byte DIGITAL_IO = (byte) 0x0A;
-    private final byte FUEL_USE_INFO = (byte) 0x12;
-    private final byte OPERATION_TIME = (byte) 0x04;
-    private final byte FILTER_USETIME = (byte) 0x08;
-    private final byte FILTER_INIT = (byte) 0x09;
-    private final byte FILTER_CHANGE = (byte) 0x20;
-    private final byte CURRENT_ERROR_INFO = (byte) 0x21;
-
-
-
-
+    private static ParsingData parsingData;
     /*ParsingData class 변수 초기화*/
     static {
         parsingData = null;
@@ -72,6 +58,7 @@ public class ParsingData {
         if (recvMsg.length == 0 || recvMsg == null) {
             throw new Exception("잘못된 data입니다.");
         }
+
         data = recvMsg;
         nextIndex = 0;
         groupCount = 0;
@@ -81,7 +68,7 @@ public class ParsingData {
         msgInfo = data[POSITIVE_RS_ID];
 
         switch (msgInfo){
-            case  LDR: {
+            case Data.LDR: {
                 groupCount = data[++nextIndex];
                 if(groupCount == 0)
                     return ;
@@ -137,13 +124,15 @@ public class ParsingData {
                 }
 
             }
-            case  (byte)0xE7: break;
-            case  (byte)0xE8: break;
-            case  (byte)0xE9: break;
-            case  (byte)0xE1: break;
-            case  (byte)0xE2: break;
+            case  LDW: break;
+            case  PTS: break;
+            case  ERR: break;
+            case  ERW: break;
+            case  EIR: break;
             default: Log.i("여기로","오는가");//throw new Exception("잘못된 데이터 입니다.");
         }
+        if(CommunicationManager.socketActivity instanceof MainActivity)
+            ;
         return ;
     }
 }

@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements SocketActivity{
     ParsingData parsingData = ParsingData.getInstance();
-    RequestData requestData = new RequestData();
+    Data data = new Data();
     ReceiveData receiveData = new ReceiveData();
     private Object obj;
     SQLiteDatabase db;
