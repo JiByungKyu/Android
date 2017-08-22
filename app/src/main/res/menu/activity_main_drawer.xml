@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_machine"
+            android:title="DX380LC-3" />
+        <item
+            android:id="@+id/nav_home"
+            android:title="Home" />
+        <item android:title="Monitoring">
+            <menu>
+                <item
+                    android:id="@+id/monitoring_basicInformation"
+                    android:title="Basic information"/>
+                <item
+                    android:id="@+id/monitoring_digitalIO"
+                    android:title="Digital In-Out"/>
+                <item
+                    android:id="@+id/monitoring_AnalogIO"
+                    android:title="Analog In-Out" />
+            </menu>
+        </item>
+        <item
+            android:id="@+id/nav_slideshow"
+            android:title="Graph Output" />
+        <item android:title="Operation Hour Information">
+            <menu>
+                <item
+                    android:id="@+id/operationhour_daily"
+                    android:title="Daily Operation Information"/>
+                <item
+                    android:id="@+id/operationhour_total"
+                    android:title="Total Operation Information"/>
+            </menu>
+        </item>
+    </group>
+
+</menu>
