@@ -78,7 +78,7 @@ public class ParsingData {
                             for(int j=0;j<dataCount;j++){
                                 LSB = data[++nextIndex] & 0xff ;
                                 MSB = data[++nextIndex] & 0xff ;
-                                UNIT = (LSB << 8) | (MSB & 0xff);
+                                UNIT = (MSB << 8) | LSB;
                                 analogParsedData[j] = UNIT;
                             }
                             dataSet.put(Data.ANALOG, analogParsedData);
@@ -86,9 +86,15 @@ public class ParsingData {
                         case Data.DIGITAL_IO :
 
                         case Data.FUEL_USE_INFO :
-                            int[] fuelParsedData = new int[dataCount];
-                            for(int j=0;j<dataCount;j++){
-                                UNIT = (data[++nextIndex] << 8) | (data[++nextIndex] & 0xff);
+                            int[] fuelParsedData = new int[dataCount/2];
+                            for(int j=0;j<dataCount/2;j++){
+                                LSB = data[++nextIndex] & 0xff ;
+                                MSB = data[++nextIndex] & 0xff ;
+                                UNIT = (MSB << 8) | LSB;
+
+                                LSB = data[++nextIndex] & 0xff ;
+                                MSB = data[++nextIndex] & 0xff ;
+                                UNIT = ((MSB << 24) | (LSB << 16)) | UNIT;
                                 fuelParsedData[j] = UNIT;
                             }
                             dataSet.put(Data.FUEL_USE_INFO, fuelParsedData);
@@ -96,6 +102,19 @@ public class ParsingData {
                             break;
 
                         case Data.OPERATION_TIME :
+                            int[] operationParsedData = new int[dataCount/2];
+                            for(int j=0;j<dataCount/2;j++){
+                                LSB = data[++nextIndex] & 0xff ;
+                                MSB = data[++nextIndex] & 0xff ;
+                                UNIT = (MSB << 8) | LSB;
+
+                                LSB = data[++nextIndex] & 0xff ;
+                                MSB = data[++nextIndex] & 0xff ;
+                                UNIT = ((MSB << 24) | (LSB << 16)) | UNIT;
+                                operationParsedData[j] = UNIT;
+                            }
+                            dataSet.put(Data.OPERATION_TIME, operationParsedData);
+                            break;
                         case Data.FILTER_USETIME :
                         case Data.FILTER_INIT :
                         case Data.FILTER_CHANGE :

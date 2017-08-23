@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
 import java.util.HashMap;
 
 /**
@@ -15,14 +17,14 @@ public class DBHelper extends SQLiteOpenHelper{
     private static final String DATABASE_NAME = "gusto.db";
     private static final int DATABASE_VERSION = 1;
     public static HashMap<String, String[]> ceiMap;
-    public static HashMap<String, Double> analogMap;
-    private String[] info;
+    public static HashMap<String, String[]> analogMap;
+    private String[][] info;
 
     public DBHelper(Context context) {
         super(context,DATABASE_NAME, null, DATABASE_VERSION);
-        analogMap = new HashMap<String, Double>();
+        analogMap = new HashMap<String, String[]>();
         ceiMap = new HashMap<String, String[]>();
-        info = new String[3];
+        info = null;
     }
 
     @Override
@@ -55,27 +57,46 @@ public class DBHelper extends SQLiteOpenHelper{
 
     public void selectCurrentErrorInfo(SQLiteDatabase db){
         Cursor cursor;
-        cursor  = db.rawQuery("select * from fault_code_list_tb;",null);
-        System.out.println(cursor);
+        cursor = db.rawQuery("select count(*) from fault_code_list_tb;",null);
+        int count = 0;
         while(cursor.moveToNext()){
+
+            count = cursor.getInt(0);
+            Log.i("개수",""+count);
+        }
+        info = new String[count][3];
+        int index = 0;
+        cursor  = db.rawQuery("select * from fault_code_list_tb;",null);
+         while(cursor.moveToNext()){
             String ID = cursor.getString(1);
             String CONTENT_KR = cursor.getString(2);
-            String CONTENT_ER = cursor.getString(3);
+            String
+                    CONTENT_ER = cursor.getString(3);
             int FCL_INDEX = cursor.getInt(4);
             int FMI = cursor.getInt(5);
 
-            info[0] = ID;
-            info[1] = CONTENT_KR;
-            info[2] = CONTENT_ER;
+            info[index][0] = ID;
+            info[index][1] = CONTENT_KR;
+            info[index][2] = CONTENT_ER;
 
             System.out.println("ID :" + ID + ",KR : " + CONTENT_KR + ",ER : " +CONTENT_ER + ",INDEX : " +FCL_INDEX
                     + "FMI : " + FMI);
-            ceiMap.put(FCL_INDEX+""+FMI,info);
+             ceiMap.put(FCL_INDEX+""+FMI,info[index]);
+             index++;
         }
     }
 
     public void selectAnalog(SQLiteDatabase db){
         Cursor cursor;
+        cursor = db.rawQuery("select count(*) from analog_tb;",null);
+        int count = 0;
+        while(cursor.moveToNext()){
+
+            count = cursor.getInt(0);
+            Log.i("개수",""+count);
+        }
+        info = new String[count][3];
+        int index = 0;
         cursor  = db.rawQuery("select * from analog_tb;",null);
         System.out.println(cursor);
         while(cursor.moveToNext()){
@@ -84,9 +105,40 @@ public class DBHelper extends SQLiteOpenHelper{
             String CONTENT = cursor.getString(2);
             double unitValue = cursor.getDouble(3);
             String unit = cursor.getString(4);
+            info[index][0] = CONTENT;
+            info[index][1] = unitValue+"";
+            info[index][2] = unit+"";
 
             System.out.println("ID :" + ID + ",Content : " + CONTENT + ",unitValue : " +unitValue + ",unit : " +unit);
-           // map.put(FCL_INDEX+""+FMI,info);
+            analogMap.put(ID+"",info[index]);
+        }
+    }
+
+    public void selectFuelUseInfo(SQLiteDatabase db){
+        Cursor cursor;
+        cursor = db.rawQuery("select count(*) from fuel_use_tb;",null);
+        int count = 0;
+        while(cursor.moveToNext()){
+
+            count = cursor.getInt(0);
+            Log.i("개수",""+count);
+        }
+        info = new String[count][3];
+        int index = 0;
+        cursor  = db.rawQuery("select * from fuel_use_tb;",null);
+        System.out.println(cursor);
+        while(cursor.moveToNext()){
+
+            int ID = cursor.getInt(1);
+            String CONTENT = cursor.getString(2);
+            double unitValue = cursor.getDouble(3);
+            String unit = cursor.getString(4);
+            info[index][0] = CONTENT;
+            info[index][1] = unitValue+"";
+            info[index][2] = unit+"";
+
+            System.out.println("ID :" + ID + ",Content : " + CONTENT + ",unitValue : " +unitValue + ",unit : " +unit);
+            analogMap.put(index+"",info[index]);
         }
     }
 }

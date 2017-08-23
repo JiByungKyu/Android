@@ -1,8 +1,6 @@
 package com.example.byungkyu.myapplication;
 
 import android.util.Log;
-
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -13,13 +11,13 @@ public class MainDataProcess implements DataProcessor{
     private static MainDataProcess mainDataProcess;
 
     private double[] analogParsedData;
-    private double[] fuelParsedData;
+    private double[] fuelUseInfoParsedData;
     private String[][] currentErrorInfoParsedData;
     private HashMap<Byte,Object> processedData;
 
     private MainDataProcess(){
         analogParsedData = null;
-        fuelParsedData = null;
+        fuelUseInfoParsedData = null;
         currentErrorInfoParsedData = null;
         processedData = new HashMap<Byte, Object>();
     }
@@ -36,11 +34,24 @@ public class MainDataProcess implements DataProcessor{
 
         }
         this.analogParsedData = new double[analogParsedData.length];
-        for(int i = 0; i < analogParsedData.length; i++){
-            this.analogParsedData[i] = DBHelper.analogMap.get(i) * analogParsedData[i];
+
+
+        this.analogParsedData[0] = Double.valueOf(DBHelper.analogMap.get(0x02)[1]) * analogParsedData[0];
+        this.analogParsedData[1] = Double.valueOf(DBHelper.analogMap.get(0x03)[1]) * analogParsedData[1];
+
+        processedData.put(Data.ANALOG,this.analogParsedData);
+    }
+    public void  fuelUseInfoDataProcessing(int[] fuelParsedData){
+        if(fuelParsedData == null || fuelParsedData.length == 0){
 
         }
-        processedData.put(Data.ANALOG,this.analogParsedData);
+        this.fuelUseInfoParsedData = new double[fuelParsedData.length];
+
+        for(int i = 0; i < fuelParsedData.length; i++){
+            this.fuelUseInfoParsedData[i] = Double.valueOf(DBHelper.analogMap.get(0x03)[1]) * fuelParsedData[1];
+        }
+
+        processedData.put(Data.FUEL_USE_INFO,this.fuelUseInfoParsedData);
     }
     public void currentErrorInfoProcessing(int[][] parsingData){
         if(parsingData == null){
@@ -48,13 +59,16 @@ public class MainDataProcess implements DataProcessor{
         }
         this.currentErrorInfoParsedData = new String[parsingData.length][3];
 
+        Log.i("보자",DBHelper.ceiMap.keySet()+"");
         //해당 값 투입
         for(int i=0; i<parsingData.length; i++){
             this.currentErrorInfoParsedData[i] = DBHelper.ceiMap.get(parsingData[i][0]+""+parsingData[i][1]);
+            Log.i("FMI", this.currentErrorInfoParsedData[i][0]);
         }
 
         processedData.put(Data.CURRENT_ERROR_INFO,this.currentErrorInfoParsedData);
         //디비에 저장할것
+
     }
     @Override
     public void processingMsg(HashMap<Byte, Object> dataSet) {

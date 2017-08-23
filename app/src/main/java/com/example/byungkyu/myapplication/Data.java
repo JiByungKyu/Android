@@ -36,7 +36,6 @@ public class Data {
     public static  final byte FILTER_INIT = (byte) 0x09;
     public static  final byte FILTER_CHANGE = (byte) 0x20;
     public static  final byte CURRENT_ERROR_INFO = (byte) 0x21;
-    public static  final BigInteger reqReadTest= new BigInteger("06a60001010101b0",16);
     public static  final BigInteger reqReadFault= new BigInteger("05a600012100cd",16);
     public static  final BigInteger reqReadFuel=new BigInteger("05a600011200be",16);
     public static  final BigInteger reqReadOpTime=new BigInteger("05a600010400b0",16);

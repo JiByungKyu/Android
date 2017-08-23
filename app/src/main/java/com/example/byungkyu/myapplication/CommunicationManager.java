@@ -81,9 +81,6 @@ public class CommunicationManager {
             public void run() {
                 try {
                     if(socketActivity instanceof MainActivity) {
-                        /*outputStream.write(Data.reqReadTest.toByteArray());
-                        Thread.sleep(gap);*/
-                        //outputStream.flush();
                         outputStream.write(Data.reqReadFault.toByteArray());
                         Thread.sleep(gap);
                         outputStream.write(Data.reqReadFuel.toByteArray());
