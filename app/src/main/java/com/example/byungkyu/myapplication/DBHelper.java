@@ -18,11 +18,14 @@ public class DBHelper extends SQLiteOpenHelper{
     private static final int DATABASE_VERSION = 1;
     public static HashMap<String, String[]> ceiMap;
     public static HashMap<String, String[]> analogMap;
+    public static HashMap<String, String[]> fuelMap;
+    public static HashMap<String, String[]> operationTimeMap;
     private String[][] info;
 
     public DBHelper(Context context) {
         super(context,DATABASE_NAME, null, DATABASE_VERSION);
         analogMap = new HashMap<String, String[]>();
+        fuelMap = new HashMap<String, String[]>();
         ceiMap = new HashMap<String, String[]>();
         info = null;
     }
@@ -111,6 +114,36 @@ public class DBHelper extends SQLiteOpenHelper{
 
             System.out.println("ID :" + ID + ",Content : " + CONTENT + ",unitValue : " +unitValue + ",unit : " +unit);
             analogMap.put(ID+"",info[index]);
+            index++;
+        }
+    }
+
+    public void selectOperationTime(SQLiteDatabase db){
+        Cursor cursor;
+        cursor = db.rawQuery("select count(*) from operation_time_tb;",null);
+        int count = 0;
+        while(cursor.moveToNext()){
+
+            count = cursor.getInt(0);
+            Log.i("개수",""+count);
+        }
+        info = new String[count][3];
+        int index = 0;
+        cursor  = db.rawQuery("select * from operation_time_tb;",null);
+        System.out.println(cursor);
+        while(cursor.moveToNext()){
+
+            int ID = cursor.getInt(1);
+            String CONTENT = cursor.getString(2);
+            double unitValue = cursor.getDouble(3);
+            String unit = cursor.getString(4);
+            info[index][0] = CONTENT;
+            info[index][1] = unitValue+"";
+            info[index][2] = unit+"";
+
+            System.out.println("ID :" + ID + ",Content : " + CONTENT + ",unitValue : " +unitValue + ",unit : " +unit);
+            operationTimeMap.put(index+"",info[index]);
+            index++;
         }
     }
 
@@ -138,7 +171,8 @@ public class DBHelper extends SQLiteOpenHelper{
             info[index][2] = unit+"";
 
             System.out.println("ID :" + ID + ",Content : " + CONTENT + ",unitValue : " +unitValue + ",unit : " +unit);
-            analogMap.put(index+"",info[index]);
+            fuelMap.put(index+"",info[index]);
+            index++;
         }
     }
 }

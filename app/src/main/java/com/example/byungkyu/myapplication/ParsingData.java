@@ -32,7 +32,7 @@ public class ParsingData {
     private ParsingData() {
         data = null;
         dataProcessor = null;
-        dataSet = new HashMap<Byte, Object>();
+        dataSet = null;
     }
 
     /*ParsingData 싱글톤 패턴*/
@@ -65,6 +65,7 @@ public class ParsingData {
                 if(CommunicationManager.socketActivity instanceof MainActivity){
                     dataProcessor = MainDataProcess.getInstance();
                 }
+                dataSet = new HashMap<Byte,Object>();
                 for(int i = 0; i < groupCount; i++) {
                     //LDR 종류 체크 데이터
                     msgInfo = data[++nextIndex];

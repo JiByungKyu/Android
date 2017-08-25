@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
             db.execSQL("insert into negative_response_tb(ID, CONTENT) values(0x80, 'serviceNotSupportedInActiveDiagnosticMode');");
             */
             //로컬 데이터 그룹 insert 구문
+            db.execSQL("delete from local_data_group_tb");
             db.execSQL("insert Or Ignore into local_data_group_tb(ID, CONTENT) values(0x01, '아날로그');");
             db.execSQL("insert Or Ignore into local_data_group_tb(ID, CONTENT) values(0x0A, '디지털');");
             db.execSQL("insert Or Ignore into local_data_group_tb(ID, CONTENT) values(0x12, '연료 사용정보');");
@@ -92,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
             db.execSQL("insert Or Ignore into local_data_group_tb(ID, CONTENT) values(0x21, '현재 고장 정보');");
 
             //아날로그 insert 구문
+            db.execSQL("delete from analog_tb");
             db.execSQL("insert Or Ignore into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x00, '엔진 회전수(Engine RPM)', 0.125, 'rpm');");
             db.execSQL("insert Or Ignore into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x01, '엔진 오일 압력',  4, 'kPa');");
             db.execSQL("insert Or Ignore into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x02, '연료 온도',  1, '℃');");
@@ -104,15 +106,25 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
             db.execSQL("insert Or Ignore into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x09, '쿨링 팬 밸브', 1, 'mA');");
             db.execSQL("insert Or Ignore into analog_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x10, '유량제어 밸브', 1, 'mA');");
 
+
             //연료 insert 구문
+            db.execSQL("delete from fuel_use_tb");
             db.execSQL("insert Or Ignore into fuel_use_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x01, '총 연료 소모량', 0.5, 'Liter');");
-            db.execSQL("insert Or Ignore into fuel_use_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x23, 'Performance 모드 연료 소모량',  0.5, 'Liter');");
-            db.execSQL("insert Or Ignore into fuel_use_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x45, 'Travel 연료 소모량',  0.5, 'Liter');");
-            db.execSQL("insert Or Ignore into fuel_use_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x67, 'Fix 연료 소모량',0.5, 'Liter');");
+            db.execSQL("insert Or Ignore into fuel_use_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x23, 'Performance 모드 연료 소모량', 0.5, 'Liter');");
+            db.execSQL("insert Or Ignore into fuel_use_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x45, 'Travel 연료 소모량', 0.5, 'Liter');");
+            db.execSQL("insert Or Ignore into fuel_use_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x67, 'Fix 연료 소모량', 0.5, 'Liter');");
             db.execSQL("insert Or Ignore into fuel_use_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x89, '기본 연료 소모량', 0.5, 'Liter');");
 
-            //고장정보 insert 구문
+            //연료 insert 구문
+            db.execSQL("delete from operation_time_tb");
+            db.execSQL("insert Or Ignore into operation_time_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x01, '장비 총 가동시간', 1, 'min');");
+            db.execSQL("insert Or Ignore into operation_time_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x23, 'Performance 모드량', 1, 'min');");
+            db.execSQL("insert Or Ignore into operation_time_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x45, 'Travel 모드', 1, 'min');");
+            db.execSQL("insert Or Ignore into operation_time_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x67, 'Fix 모드', 1, 'min');");
+            db.execSQL("insert Or Ignore into operation_time_tb(ID, CONTENT, UNITVALUE,  UNIT) values(0x89, '기본 모드', 1, 'min');");
 
+            //고장정보 insert 구문
+            db.execSQL("delete from fault_code_list_tb");
             db.execSQL("insert Or Ignore into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('E000046-01', '대기압센서(APS)로부터 낮은 " +
                     "공기압 신호 (E56)', 'Low air pressure signal from APS(E56)', 205, 1);");
             db.execSQL("insert Or Ignore into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('E000046-19', '대기압센서(APS)로부터 CAN " +
@@ -153,21 +165,21 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
             db.execSQL("insert Or Ignore into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('VPV004-06', '팬 제어 비례 감압 밸브 (J) 전" +
                     "류가 정상 범위보다 높음(단락)', 'FAN CONTROL P/V (J), Current above normal', 42, 6);");
             db.execSQL("insert Or Ignore into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('VPV005-05', '압력 제어 비례 감압 밸브 (H) " +
-                    "전류가 정상 범위보다 낮음(개방)', 'FAN CONTROL P/V (J), Current PRESS. CONTROL 1 P/V (H), Current below normal', 89, 5);");
+                    "전류가 정상 범위보다 낮음(개방)', 'PRESS. CONTROL 1 P/V (H), Current below normal', 89, 5);");
             db.execSQL("insert Or Ignore into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('VPV005-06', '압력 제어 비례 감압 밸브 (H) " +
                     "전류가 정상 범위보다 높음(단락)', 'PRESS. CONTROL 1 P/V (H), Current above normal', 89, 6);");
             db.execSQL("insert Or Ignore into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('VPV006-05', '압력 제어 비례 감압 밸브 (I) " +
                     "전류가 정상 범위보다 낮음(개방)', 'PRESS. CONTROL 2 P/V (I), " +
                     "Current below normal', 77, 5);");
             db.execSQL("insert Or Ignore into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('VPV006-06', '압력 제어 비례 감압 밸브 (I) " +
-                    "전류가 정상 범위보다 높음(단락)', 'FAN CONTROL P/V (J), Current above normal', 77, 6);");
+                    "전류가 정상 범위보다 높음(단락)', 'PRESS. CONTROL 2 P/V (I), Current above normal', 77, 6);");
             db.execSQL("insert Or Ignore into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('VPV007-05', '유량제어 비례 감압 밸브 (C) " +
                     "2-WAY 좌측고압 전류가 정상범위보다 낮음(개방)', 'FLOW CONTROL P/V (C) 2-WAY RH-OPEN, Current below normal', 102, 5);");
             db.execSQL("insert Or Ignore into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('VPV007-06', '유량제어 비례 감압 밸브 (C) " +
                     "2-WAY 좌측고압 전류가 정상 범위보다 높음(단락)', 'FLOW CONTROL P/V (C) 2-WAY RH-OPEN, Current above normal', 102, 6);");
             db.execSQL("insert Or Ignore into fault_code_list_tb(ID, CONTENT_KR, CONTENT_ER, FCL_INDEX, FMI) values('VPV008-05', '유량제어 비례 감압 밸브 (D) " +
                     "2-WAY 우측고압 전류가 정상 범위보다 낮음(개방)', 'FLOW CONTROL P/V (D) 2-WAY RH-CLOSE, Current below normal', 103, 5);");
-           //db.execSQL("delete from fault_code_list_tb");
+
         }catch (SQLException e){
             e.getMessage();
         }
@@ -192,6 +204,8 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
         try{
             helper.selectCurrentErrorInfo(db);
             helper.selectAnalog(db);
+            helper.selectFuelUseInfo(db);
+            //helper.selectOperationTime(db);
             process();
 
         }
@@ -229,15 +243,42 @@ public class MainActivity extends AppCompatActivity implements SocketActivity{
     @Override
     public void receiveMsg(HashMap<Byte, Object> dataSet) {
         Log.i("여기엔","왓지");
+        Log.i("데이터맵",dataSet.keySet()+"");
         if(dataSet.containsKey(Data.CURRENT_ERROR_INFO)){
             String[][] strings = (String[][]) dataSet.get(Data.CURRENT_ERROR_INFO);
-          for(String[] str:strings){
+            for(String[] str:strings){
               sb.append("오류코드 : " + str[0] + ", 한글 : " + str[1] + ", 영어 : " + str[2] +"\n");
-          }
+            }
             msg = Message.obtain();
             msg.obj=sb.toString();
             msgHandler.sendMessage(msg);
         }
-
+        else if(dataSet.containsKey(Data.FUEL_USE_INFO)){
+            String[] strings = (String[]) dataSet.get(Data.FUEL_USE_INFO);
+            for(String str:strings){
+                sb.append("연료 : " + str + "\n");
+            }
+            msg = Message.obtain();
+            msg.obj=sb.toString();
+            msgHandler.sendMessage(msg);
+        }
+        else if(dataSet.containsKey(Data.OPERATION_TIME)){
+            String[] strings = (String[]) dataSet.get(Data.OPERATION_TIME);
+            for(String str:strings){
+                sb.append("시간 : " + str + "\n");
+            }
+            msg = Message.obtain();
+            msg.obj=sb.toString();
+            msgHandler.sendMessage(msg);
+        }
+        else if(dataSet.containsKey(Data.ANALOG)){
+            String[] strings = (String[]) dataSet.get(Data.ANALOG);
+            for(String str:strings){
+                sb.append("아날로그  : " + str + "\n");
+            }
+            msg = Message.obtain();
+            msg.obj=sb.toString();
+            msgHandler.sendMessage(msg);
+        }
     }
 }
