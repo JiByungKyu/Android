@@ -7,7 +7,7 @@ import android.media.Image;
  * Created by USER on 2017-08-17.
  */
 
-public class ListViewItem {
+public class GraphListViewItem {
     private int type;               //리스트 아이템 타입
     private String date;            //날짜, 시간
     private int graphNo;            //저장된 그래프 개수

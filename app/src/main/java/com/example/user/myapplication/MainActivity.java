@@ -22,22 +22,35 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        final Intent analogActivity = new Intent(this, AnalogActivity.class);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.left_drawer);
-        final ArrayList<Menu> mMenu = setExpandableListData();
+        final ArrayList<MenuList> mMenu = setExpandableListData();
         ExpandableListViewAdapter expandableListAdapter = new ExpandableListViewAdapter(this, mMenu);
         expandableListView.setAdapter(expandableListAdapter);
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                switch(groupPosition){
+                    //Monitoring
+                    case 2:
+                        switch (childPosition){
+                            //Analog In-Out
+                            case 2:
+                                startActivity(analogActivity);
+                                break;
+                        }
+                        break;
+                }
+
                 return false;
             }
         });
 
         ListView listView = (ListView) findViewById(R.id.right_drawer);
-        ListViewAdapter listAdapter = new ListViewAdapter();
+        GraphListViewAdapter listAdapter = new GraphListViewAdapter();
         listView.setAdapter(listAdapter);
         setListData(listAdapter);
 
@@ -61,25 +74,29 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private ArrayList<Menu> setExpandableListData(){
-        Menu m1 = new Menu("Home");
-        Menu m2 = new Menu("Monitoring");
-        m2.item.add("Basic Information");
-        m2.item.add("Digital In-Out");
-        m2.item.add("Analog In-Out");
-        Menu m3 = new Menu("Graph Output");
-        Menu m4 = new Menu("Operation Hour Information");
-        m4.item.add("Daily Operation Information");
-        m4.item.add("Total Operation Information");
+    private ArrayList<MenuList> setExpandableListData(){
+        MenuList m1 = new MenuList("DX380LC-3");
+        MenuList m2 = new MenuList("Home");
+        MenuList m3 = new MenuList("Monitoring");
+        MenuList m4 = new MenuList("Graph Output");
+        MenuList m5 = new MenuList("Operation Hour Information");
 
-        ArrayList<Menu> allMenu = new ArrayList();
+        m3.item.add("Basic Information");
+        m3.item.add("Digital In-Out");
+        m3.item.add("Analog In-Out");
+
+        m5.item.add("Daily Operation Information");
+        m5.item.add("Total Operation Information");
+
+        ArrayList<MenuList> allMenu = new ArrayList();
         allMenu.add(m1);        allMenu.add(m2);
         allMenu.add(m3);        allMenu.add(m4);
+        allMenu.add(m5);
 
         return allMenu;
     }
 
-    private void setListData(ListViewAdapter listAdapter) {
+    private void setListData(GraphListViewAdapter listAdapter) {
         listAdapter.addItem("2017.08.21", 2);
         listAdapter.addItem("2017 08 21 / 15:57:10", "DX380LC-3", "000000");
         listAdapter.addItem("2017 08 21 / 15:57:10", "DX380LC-3", "000000");
@@ -104,11 +121,6 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -118,12 +130,8 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_home) {
+       // if (id == R.id.nav_home) {
             // Handle the camera action
-        } else if (id == R.id.nav_slideshow) {
-
-        }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -131,11 +139,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onClick(View v) {
-        switch(v.getId()){
-            case R.id.monitoring_AnalogIO:
+        /*switch(v.getId()){
+            case R.id:
                 Intent intent = new Intent(getApplicationContext(), AnalogActivity.class);
                 startActivity(intent);
                 break;
-        }
+        }*/
     }
 }

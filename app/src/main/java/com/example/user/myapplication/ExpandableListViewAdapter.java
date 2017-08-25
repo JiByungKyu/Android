@@ -16,10 +16,10 @@ import java.util.ArrayList;
 
 public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
     private Context mContext;
-    private ArrayList<Menu> mList;
+    private ArrayList<MenuList> mList;
     private LayoutInflater inflater;
 
-    public ExpandableListViewAdapter(Context context, ArrayList<Menu> mList){
+    public ExpandableListViewAdapter(Context context, ArrayList<MenuList> mList){
         this.mContext = context;
         this.mList = mList;
         inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -47,12 +47,12 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     @Override
     public long getGroupId(int groupPosition) {
-        return 0;
+        return groupPosition;
     }
 
     @Override
     public long getChildId(int groupPosition, int childPosition) {
-        return 0;
+        return childPosition;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.nav_left_parent,null);
         }
 
-        Menu mMenu = (Menu)getGroup(groupPosition);
+        MenuList mMenu = (MenuList)getGroup(groupPosition);
 
         String menuName = mMenu.function;
 
@@ -81,11 +81,9 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         if(convertView == null){
-            convertView = inflater.inflate(R.layout.nav_left_child,null);
+            convertView = inflater.inflate(R.layout.nav_left_child, null);
         }
-
         String child = (String) getChild(groupPosition, childPosition);
-
         TextView name = (TextView) convertView.findViewById(R.id.childText);
 
         name.setText(child);

@@ -1,16 +1,11 @@
 package com.example.user.myapplication;
 
 import android.content.Context;
-import android.graphics.ImageFormat;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -19,12 +14,12 @@ import java.util.ArrayList;
  * Created by USER on 2017-08-17.
  */
 
-public class ListViewAdapter extends BaseAdapter{
+public class GraphListViewAdapter extends BaseAdapter{
     private static final int ITEM_VIEW_TYPE_DATE = 0;
     private static final int ITEM_VIEW_TYPE_GRAPH = 1;
     private static final int ITEM_VIEW_TYPE_MAX = 2;
 
-    private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>();
+    private ArrayList<GraphListViewItem> listViewItemList = new ArrayList<GraphListViewItem>();
 
     @Override
     public int getViewTypeCount(){
@@ -58,7 +53,7 @@ public class ListViewAdapter extends BaseAdapter{
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) ;
             // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
-            ListViewItem listViewItem = listViewItemList.get(position);
+            GraphListViewItem listViewItem = listViewItemList.get(position);
 
             switch (viewType) {
                 case ITEM_VIEW_TYPE_DATE:
@@ -85,7 +80,7 @@ public class ListViewAdapter extends BaseAdapter{
 
 
     public void addItem(String date, int graphNo){
-        ListViewItem item = new ListViewItem();
+        GraphListViewItem item = new GraphListViewItem();
 
         item.setType(ITEM_VIEW_TYPE_DATE);
         item.setDate(date);
@@ -95,7 +90,7 @@ public class ListViewAdapter extends BaseAdapter{
     }
 
     public void addItem(String date, String equipment, String num){
-        ListViewItem item = new ListViewItem();
+        GraphListViewItem item = new GraphListViewItem();
 
         item.setType(ITEM_VIEW_TYPE_GRAPH);
         item.setDate(date);
