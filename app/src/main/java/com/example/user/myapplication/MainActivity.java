@@ -62,6 +62,11 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view_left);
         navigationView.setNavigationItemSelectedListener(this);
+
+        ListView errorList = (ListView) findViewById(R.id.error_listView);
+        ErrorListAdapter errorListAdapter = new ErrorListAdapter();
+        errorList.setAdapter(errorListAdapter);
+        setErrorListData(errorListAdapter);
     }
 
     @Override
@@ -145,5 +150,11 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
         }*/
+    }
+
+    public void setErrorListData(ErrorListAdapter errorListAdapter){
+        errorListAdapter.addItem("V000201", "GUAGE PANEL ERROR, Failure mode not identifiable");
+        errorListAdapter.addItem("V000202", "E-ECU ERROR, Failure mode not Identifiable");
+        errorListAdapter.addItem("V000210", "PUMP P/V (A),Current below normal");
     }
 }

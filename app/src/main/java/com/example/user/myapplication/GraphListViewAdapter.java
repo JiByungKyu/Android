@@ -52,7 +52,6 @@ public class GraphListViewAdapter extends BaseAdapter{
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) ;
-            // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
             GraphListViewItem listViewItem = listViewItemList.get(position);
 
             switch (viewType) {

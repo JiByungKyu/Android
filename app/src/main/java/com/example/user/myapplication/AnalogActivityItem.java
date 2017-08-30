@@ -6,9 +6,14 @@ package com.example.user.myapplication;
 
 public class AnalogActivityItem {
     private String analogID;
-    private int value;
+    private String value;
+    private double progressBar;
 
-    public void setValue(int value) {
+    public void setProgressBar(double progressBar) {
+        this.progressBar = progressBar;
+    }
+
+    public void setValue(String value) {
         this.value = value;
     }
 
@@ -16,11 +21,15 @@ public class AnalogActivityItem {
         this.analogID = analogID;
     }
 
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
     public String getAnalogID() {
         return analogID;
+    }
+
+    public double getProgressBar() {
+        return progressBar;
     }
 }
