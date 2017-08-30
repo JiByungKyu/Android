@@ -7,7 +7,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0C3870"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -442,7 +443,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingBottom="5dp">
 
         <ImageView
             android:id="@+id/imageView6"
@@ -455,17 +457,17 @@
             android:id="@+id/textView34"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:paddingLeft="15dp"
             android:text="Failure Information"
-            android:layout_gravity="center"
             android:textColor="#FFFFFF" />
 
         <TextView
             android:id="@+id/textView35"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
             android:layout_gravity="center"
+            android:paddingLeft="15dp"
             android:text="8"
             android:textColor="#FFFFFF" />
 
@@ -475,10 +477,7 @@
         android:id="@+id/error_listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:choiceMode="singleChoice"
-        android:groupIndicator="@null"
         android:paddingLeft="15dp"
         android:paddingTop="5dp" />
 
 </LinearLayout>
-
